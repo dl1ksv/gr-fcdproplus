@@ -1,0 +1,34 @@
+gr-fcdproplus is an linux addon for gnuradio to implement a funcube dongle pro+ source.
+It autodetects the correct soundcard from /proc/asound/cards.
+This idea was taken from the osmosdr drivers.
+
+To control the device the hidraw code of the hidapi is used.
+
+
+1. Dependencies:
+
+- gnuradio
+- alsa usb drivers activated
+
+2. Installation
+
+get the latest code from https://github.com/dl1ksv/gr-fcdproplus
+
+The build process is cmake based. So change to code directory.
+There
+$mkdir build
+$cd build
+$cmake -DCMAKE_INSTALL_PREFIX=<where gnuradio is installed>
+$make
+$su
+$make install
+
+After that you'll find in grc in Sources
+Funcube Dongle Pro+ source
+
+3. Credits
+
+Some code is taken from qthid-4.1 by Alexandru Csete, OZ9AEC.
+The hid part is taken from
+ http://github.com/signal11/hidapi
+
