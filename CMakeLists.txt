@@ -87,7 +87,6 @@ find_package(Gruel)
 find_package(GnuradioCore)
 find_package(GnuradioAudio)
 find_package(CppUnit)
-find_package(USB)
 if(NOT GRUEL_FOUND)
     message(FATAL_ERROR "Gruel required to compile fcdproplus")
 endif()
@@ -98,9 +97,6 @@ endif()
 
 if(NOT CPPUNIT_FOUND)
     message(FATAL_ERROR "CppUnit required to compile fcdproplus")
-endif()
-if(NOT LIBUSB_FOUND)
-	message(FATAL_ERROR "libusb required to compile fcdproplus")
 endif()
 ########################################################################
 # Setup the include and linker paths
