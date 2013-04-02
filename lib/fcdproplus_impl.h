@@ -32,7 +32,6 @@ namespace gr {
     {
     private:
       audio_source::sptr fcd;                   /*!< The audio input source */
- //     int doAction(unsigned char * input, int inputLength,unsigned char * output, int *outputLength); /*!< handle usb communication */
       hid_device *d_control_handle;             /*!< handle to control the device, set frequency, etc */
       unsigned int d_freq_req;                           /*!< The latest requested frequency in Khz */
       unsigned char aucBuf[65];                 /*!< Buffers to read/write control messages to the dongle */
@@ -40,7 +39,7 @@ namespace gr {
 
 
     public:
-      fcdproplus_impl();
+      fcdproplus_impl(const std::string user_device_name);
       ~fcdproplus_impl();
       /* Public API functions documented in include/fcdproplus.h */
       void set_freq_khz(float freq);
@@ -49,10 +48,6 @@ namespace gr {
       void set_freq_corr(int ppm);
       void set_if_gain(int gain);
 
-      // Where all the action really happens
-      //int work(int noutput_items,
-      //     gr_vector_const_void_star &input_items,
-      //     gr_vector_void_star &output_items);
     };
 
   } // namespace fcdproplus

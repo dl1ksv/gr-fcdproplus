@@ -25,6 +25,8 @@
 #include <fcdproplus/api.h>
 #include <gr_hier_block2.h>
 
+#include <string>
+
 namespace gr {
   namespace fcdproplus {
 
@@ -54,7 +56,7 @@ namespace gr {
         * class. fcdproplus::fcdproplus::make is the public interface for
         * creating new instances.
         */
-       static sptr make();
+       static sptr make(const std::string device_name = "");
 
        /*! \brief Set frequency with kHz resolution.
         *  \param freq The frequency in kHz

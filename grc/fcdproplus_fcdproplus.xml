@@ -5,7 +5,7 @@
   <category>Sources</category>
    <throttle>1</throttle>
   <import>import fcdproplus</import>
-  <make>fcdproplus.fcdproplus()
+  <make>fcdproplus.fcdproplus($device_name)
 self.$(id).set_lna($lnaswitch)
 self.$(id).set_mixer_gain($mixergainswitch)
 self.$(id).set_if_gain($if_gain)
@@ -23,6 +23,12 @@ self.$(id).set_freq_khz($freq)
        * name
        * key (makes the value accessible as $keyname, e.g. in the make node)
        * type -->
+  <param>
+    <name>Device Name</name>
+    <key>device_name</key>
+    <value></value>
+    <type>string</type>
+  </param>
   <param>
     <name>Lna enable,disable</name>
     <key>lnaswitch</key>
@@ -76,7 +82,10 @@ into one convenient GNU Radio source block.
 
 The sample rate is fixed at 192 ksps.
 
-The sound device is autodetected by looking into /proc/asound/cards .
+The sound device is taken from the device_name. This should be the alsa device name, like \
+hw:1 or plughw:1,0.
+If the device name is empty or invalid the device will beautodetected\
+by looking into /proc/asound/cards .
 
 The LNA can be switched on and off.
 

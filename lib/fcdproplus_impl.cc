@@ -28,8 +28,8 @@
 #include "fcdproplus_impl.h"
 #include "fcdcmd.h"
 
-#include <string>
 #include <fstream>
+#include <exception>
 
 
 #define FCDPROPLUS_VENDOR_ID    0x04d8
@@ -41,55 +41,77 @@ namespace gr {
   namespace fcdproplus {
 
     fcdproplus::sptr
-    fcdproplus::make()
+    fcdproplus::make(const std::string device_name)
     {
-      return gnuradio::get_initial_sptr (new fcdproplus_impl());
+      return gnuradio::get_initial_sptr (new fcdproplus_impl(device_name));
     }
 
     /*
      * The private constructor
      */
-    fcdproplus_impl::fcdproplus_impl()
+    fcdproplus_impl::fcdproplus_impl(const std::string user_device_name)
       : gr_hier_block2("fcdproplus",
 		      gr_make_io_signature(0, 0, 0),
               gr_make_io_signature(1, 1, sizeof (gr_complex)))
     {
         std::string device_name;
+        bool success;
         gr_float_to_complex_sptr f2c;
-
+        success = false;
         d_freq_req=0;
         d_corr=0;
-        device_name.clear();
-        std::string line;
-        std::ifstream cards( "/proc/asound/cards" );
-        if ( cards.is_open() )  {
-          while ( cards.good() )  {
-            getline (cards, line);
-
-            if ( line.find( "USB-Audio - FUNcube Dongle V2.0" ) != std::string::npos )  {
-              int id;
-              std::istringstream( line ) >> id;
-
-              std::ostringstream hw_id;
-              hw_id << "plughw:" << id<<",0"; // build alsa identifier
-
-              device_name= hw_id.str();
-
+        if(!user_device_name.empty())  {
+            try {
+                 /* Audio source; sample rate fixed at 192kHz */
+                 fcd = audio_make_source(192000, user_device_name, true);
+                 success=true;
             }
-          }
+            catch (std::exception ) {
+                std::cerr << "Could not open device: " <<user_device_name << std::endl;
+                success=false;
+            }
 
-          cards.close();
-          if(device_name.empty()) {
-              throw std::runtime_error("No FunCube Dongle  V2.0 found.");
-          }
+        }
+        if(success) {
+            device_name=user_device_name;
         }
         else {
-            throw std::runtime_error("Alsa not found.");
-        }
-        std::cerr <<"Funcube Dongle Pro+ found as: " << device_name << std::endl;
 
-        /* Audio source; sample rate fixed at 192kHz */
-        fcd = audio_make_source(192000, device_name, true);
+            device_name.clear();
+            std::string line;
+            std::ifstream cards( "/proc/asound/cards" );
+            if ( cards.is_open() )  {
+                while ( cards.good() )  {
+                    getline (cards, line);
+
+                    if ( line.find( "USB-Audio - FUNcube Dongle V2.0" ) != std::string::npos )  {
+                        int id;
+                        std::istringstream( line ) >> id;
+
+                        std::ostringstream hw_id;
+                        hw_id << "plughw:" << id<<",0"; // build alsa identifier
+                        device_name= hw_id.str();
+
+                    }
+                }
+                cards.close();
+                if(device_name.empty()) {
+                    throw std::runtime_error("No FunCube Dongle  V2.0 found.");
+                }
+            }
+            else {
+            throw std::runtime_error("Alsa not found.");
+            }
+            /* Audio source; sample rate fixed at 192kHz */
+            fcd = audio_make_source(192000, device_name, true);
+        }
+        if(success) {
+          std::cerr <<"Opened: " << device_name << std::endl;
+        }
+        else  {
+            std::cerr <<"Funcube Dongle Pro+ found as: " << device_name << std::endl;
+        }
+
 
         /* block to convert stereo audio to a complex stream */
         f2c = gr_make_float_to_complex(1);

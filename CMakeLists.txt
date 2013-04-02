@@ -23,7 +23,12 @@
 ########################################################################
 cmake_minimum_required(VERSION 2.6)
 project(gr-fcdproplus CXX C)
-#enable_testing()
+# Set the version information here
+set(VERSION_INFO_MAJOR_VERSION 0)
+set(VERSION_INFO_API_COMPAT    0)
+set(VERSION_INFO_MINOR_VERSION 1)
+set(VERSION_INFO_MAINT_VERSION git)
+
 
 #select the release build type by default to get optimization flags
 if(NOT CMAKE_BUILD_TYPE)
@@ -117,7 +122,8 @@ link_directories(
 )
 
 # Set component parameters
-set(GR_FCDPROPLUS_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/include CACHE INTERNAL "" FORCE)
+#set(GR_FCDPROPLUS_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/include CACHE INTERNAL "" FORCE)
+set(GR_FCDPROPLUS_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/include)
 set(GR_FCDPROPLUS_SWIG_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/swig CACHE INTERNAL "" FORCE)
 
 ########################################################################
@@ -143,6 +149,25 @@ add_subdirectory(python)
 add_subdirectory(grc)
 add_subdirectory(apps)
 add_subdirectory(docs)
+########################################################################
+# Create Pkg Config File
+########################################################################
+# fake gnuradio cpack behavior as long as we don't use it directly
+set(CPACK_PACKAGE_NAME "gnuradio-fcdproplus")
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "GNU Radio block for Funcube Dongle Pro+")
+set(CPACK_PACKAGE_VERSION ${VERSION})
+
+configure_file(
+    ${CMAKE_CURRENT_SOURCE_DIR}/gnuradio-fcdproplus.pc.in
+    ${CMAKE_CURRENT_BINARY_DIR}/gnuradio-fcdproplus.pc
+@ONLY)
+
+install(
+    FILES ${CMAKE_CURRENT_BINARY_DIR}/gnuradio-fcdproplus.pc
+    DESTINATION ${GR_LIBRARY_DIR}/pkgconfig
+    COMPONENT "fcdproplus_devel"
+)
+
 
 ########################################################################
 # Print Summary
