@@ -36,13 +36,14 @@ namespace gr {
       unsigned int d_freq_req;                           /*!< The latest requested frequency in Khz */
       unsigned char aucBuf[65];                 /*!< Buffers to read/write control messages to the dongle */
       int d_corr;
+      int d_unit;
 
 
     public:
-      fcdproplus_impl(const std::string user_device_name);
+      fcdproplus_impl(const std::string user_device_name,int unit);
       ~fcdproplus_impl();
       /* Public API functions documented in include/fcdproplus.h */
-      void set_freq_khz(float freq);
+      void set_freq(float freq);
       void set_lna(int gain);
       void set_mixer_gain(int gain);
       void set_freq_corr(int ppm);

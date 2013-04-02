@@ -41,15 +41,15 @@ namespace gr {
   namespace fcdproplus {
 
     fcdproplus::sptr
-    fcdproplus::make(const std::string device_name)
+    fcdproplus::make(const std::string device_name,int unit)
     {
-      return gnuradio::get_initial_sptr (new fcdproplus_impl(device_name));
+      return gnuradio::get_initial_sptr (new fcdproplus_impl(device_name,unit));
     }
 
     /*
      * The private constructor
      */
-    fcdproplus_impl::fcdproplus_impl(const std::string user_device_name)
+    fcdproplus_impl::fcdproplus_impl(const std::string user_device_name,int unit)
       : gr_hier_block2("fcdproplus",
 		      gr_make_io_signature(0, 0, 0),
               gr_make_io_signature(1, 1, sizeof (gr_complex)))
@@ -60,6 +60,7 @@ namespace gr {
         success = false;
         d_freq_req=0;
         d_corr=0;
+        d_unit=unit;
         if(!user_device_name.empty())  {
             try {
                  /* Audio source; sample rate fixed at 192kHz */
@@ -158,17 +159,17 @@ namespace gr {
     }
 
     void
-    fcdproplus_impl::set_freq_khz(float freq)
+    fcdproplus_impl::set_freq(float freq)
     {
         unsigned int nfreq;
         if(d_freq_req == (int) freq)
             return; // Frequency did not change
         d_freq_req=(int) freq;
         if(d_corr == 0) {
-            nfreq=((int) freq)*1000;
+            nfreq=((int) freq)*d_unit;
         }
         else {
-            nfreq=(int)((1000.+(float) d_corr/1000.)*freq);
+            nfreq=(int)(((float)d_unit+((float) d_corr)/(1000000./d_unit))*freq);
         }
         aucBuf[0]=0;
         aucBuf[1]=FCD_HID_CMD_SET_FREQUENCY_HZ;
@@ -185,7 +186,13 @@ namespace gr {
             nfreq += (unsigned int) (aucBuf[3] << 8);
             nfreq += (unsigned int) (aucBuf[4] << 16);
             nfreq += (unsigned int) (aucBuf[5] << 24);
-            std::cerr <<"Set Frequency to: "<<freq <<" KHz, corrected to: " <<nfreq/1000 << " Khz"<<std::endl;
+            if(d_unit == 1000) {
+                std::cerr <<"Set Frequency to: "<<freq/1000 <<" KHz, corrected to: " <<nfreq/1000 << " Khz"<<std::endl;
+            }
+            else {
+                std::cerr <<"Set Frequency to: "<<freq <<" Hz, corrected to: " <<nfreq << " Hz"<<std::endl;
+            }
+
         }
         else {
             std::cerr <<"Set Frequency failed: " <<freq << " Khz"<<std::endl;
@@ -257,7 +264,7 @@ namespace gr {
         //Reset Frequency setting
         freq=d_freq_req;
         d_freq_req=0;
-        set_freq_khz(freq);
+        set_freq(freq);
     }
 
     void
@@ -280,36 +287,7 @@ namespace gr {
         }
 
     }
-    /**
-    int
-    fcdproplus_impl::doAction(unsigned char * input, int inputLength,unsigned char * output, int *outputLength)
-    {
-       int ret,transfered;
-        ret=libusb_interrupt_transfer(d_control_handle,0x02 ,input,inputLength,&transfered,0);
-          if(ret != 0)
-          {
-              std::cerr <<" usb write failed, error code is: " <<ret << std::endl;
-              return ret;
-          }
-          else
-              std::cerr <<"  To write: " << inputLength << " ,written: " << transfered << std::endl;
 
-          if (*outputLength > 0)
-          {
-            ret=libusb_interrupt_transfer(d_control_handle,( 0x82 | LIBUSB_ENDPOINT_IN) ,output,*outputLength,&transfered,TIMEOUT);
-            if (ret != 0)
-            {
-                std::cerr <<" usb read failed, error code is: " <<ret << std::endl;
-                return ret;
-            }
-            else
-                std::cerr <<"  Max read: " << *outputLength << " ,read: " << transfered << std::endl;
-
-            *outputLength=transfered;
-          }
-          return 0;
-    }
-  **/
   } /* namespace fcdproplus */
 } /* namespace gr */
 

@@ -56,17 +56,17 @@ namespace gr {
         * class. fcdproplus::fcdproplus::make is the public interface for
         * creating new instances.
         */
-       static sptr make(const std::string device_name = "");
+       static sptr make(const std::string device_name = "",int unit =1 );
 
        /*! \brief Set frequency with kHz resolution.
         *  \param freq The frequency in kHz
         *
-        * Sets the frequency of the Funcube Dongle with 1 kHz resolution
+        * Sets the frequency of the Funcube Dongle with Hz or Khz resolution
+        * depending on the unit paramater ( 1: Hz , 1000 Khz )
         * applying the frequency correction set by set_freq_corr().
         *
-        * \see set_freq()
         */
-       virtual void set_freq_khz(float freq) = 0;
+       virtual void set_freq(float freq) = 0;
 
        /*! \brief Switches the LNA on/off.
         *  \param gain  lna on/off.
