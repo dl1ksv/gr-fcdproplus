@@ -3,7 +3,7 @@
 # Gnuradio Python Flow Graph
 # Title: FM radio to test FCDPROplus
 # Author: dl1ksv
-# Generated: Thu Mar 28 10:22:12 2013
+# Generated: Fri Apr 26 16:48:00 2013
 ##################################################
 
 from PyQt4 import Qt
@@ -146,12 +146,12 @@ class FMRadio(gr.top_block, Qt.QWidget):
 			5, samp_rate, 40000, 300, firdes.WIN_HAMMING, 6.76))
 		self.gr_quadrature_demod_cf_0 = gr.quadrature_demod_cf(1)
 		self.gr_multiply_const_vxx_0 = gr.multiply_const_vff((Volume, ))
-		self.fcdproplus_fcdproplus_0 = fcdproplus.fcdproplus()
+		self.fcdproplus_fcdproplus_0 = fcdproplus.fcdproplus("",1000)
 		self.fcdproplus_fcdproplus_0.set_lna(Lna)
 		self.fcdproplus_fcdproplus_0.set_mixer_gain(Mixergain)
 		self.fcdproplus_fcdproplus_0.set_if_gain(int(Ifgain))
 		self.fcdproplus_fcdproplus_0.set_freq_corr(int( PPM))
-		self.fcdproplus_fcdproplus_0.set_freq_khz(RxFrequency)
+		self.fcdproplus_fcdproplus_0.set_freq(RxFrequency)
 		  
 		self.blks2_fm_deemph_0 = blks2.fm_deemph(fs=samp_rate, tau=25e-6)
 		self.audio_sink_0 = audio.sink(48000, "default", True)
@@ -192,41 +192,41 @@ class FMRadio(gr.top_block, Qt.QWidget):
 
 	def set_RxFrequency(self, RxFrequency):
 		self.RxFrequency = RxFrequency
-		self.fcdproplus_fcdproplus_0.set_freq_khz(self.RxFrequency)
 		self.qtgui_sink_x_0.set_frequency_range(self.RxFrequency*1000, self.samp_rate)
 		self._RxFrequency_counter.setValue(self.RxFrequency)
+		self.fcdproplus_fcdproplus_0.set_freq(self.RxFrequency)
 
 	def get_PPM(self):
 		return self.PPM
 
 	def set_PPM(self, PPM):
 		self.PPM = PPM
-		self.fcdproplus_fcdproplus_0.set_freq_corr(int( self.PPM))
 		self._PPM_counter.setValue(self.PPM)
+		self.fcdproplus_fcdproplus_0.set_freq_corr(int( self.PPM))
 
 	def get_Mixergain(self):
 		return self.Mixergain
 
 	def set_Mixergain(self, Mixergain):
 		self.Mixergain = Mixergain
-		self.fcdproplus_fcdproplus_0.set_mixer_gain(self.Mixergain)
 		self._Mixergain_callback(self.Mixergain)
+		self.fcdproplus_fcdproplus_0.set_mixer_gain(self.Mixergain)
 
 	def get_Lna(self):
 		return self.Lna
 
 	def set_Lna(self, Lna):
 		self.Lna = Lna
-		self.fcdproplus_fcdproplus_0.set_lna(self.Lna)
 		self._Lna_callback(self.Lna)
+		self.fcdproplus_fcdproplus_0.set_lna(self.Lna)
 
 	def get_Ifgain(self):
 		return self.Ifgain
 
 	def set_Ifgain(self, Ifgain):
 		self.Ifgain = Ifgain
-		self.fcdproplus_fcdproplus_0.set_if_gain(int(self.Ifgain))
 		self._Ifgain_counter.setValue(self.Ifgain)
+		self.fcdproplus_fcdproplus_0.set_if_gain(int(self.Ifgain))
 
 if __name__ == '__main__':
 	parser = OptionParser(option_class=eng_option, usage="%prog: [options]")

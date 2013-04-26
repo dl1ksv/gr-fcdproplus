@@ -28,6 +28,7 @@
 #include "fcdproplus_impl.h"
 #include "fcdcmd.h"
 
+#include <iostream>
 #include <fstream>
 #include <exception>
 

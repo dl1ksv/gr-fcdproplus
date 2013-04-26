@@ -58,8 +58,8 @@ namespace gr {
         */
        static sptr make(const std::string device_name = "",int unit =1 );
 
-       /*! \brief Set frequency with kHz resolution.
-        *  \param freq The frequency in kHz
+       /*! \brief Set frequency with resolution defined by unit.
+        *  \param freq The frequency in unit Hz
         *
         * Sets the frequency of the Funcube Dongle with Hz or Khz resolution
         * depending on the unit paramater ( 1: Hz , 1000 Khz )
