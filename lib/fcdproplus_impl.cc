@@ -144,7 +144,8 @@ namespace gr {
         for(int i=2;i<15;i++)
            std::cerr << aucBuf[i];
         std::cerr << std::endl;
-
+        hid_close(d_control_handle);
+        d_control_handle=0;
     }
 
     /*
@@ -165,6 +166,12 @@ namespace gr {
         unsigned int nfreq;
         if(d_freq_req == (int) freq)
             return; // Frequency did not change
+        if(d_control_handle == 0 ) {
+          d_control_handle = hid_open ( FCDPROPLUS_VENDOR_ID ,FCDPROPLUS_PRODUCT_ID,NULL );
+          if(d_control_handle == NULL ) {
+              throw std::runtime_error("Could not reopen Controlpart.");
+          }
+        }
         d_freq_req=(int) freq;
         if(d_corr == 0) {
             nfreq=((int) freq)*d_unit;
@@ -203,6 +210,13 @@ namespace gr {
     void
     fcdproplus_impl::set_lna(int gain)
     {
+        if(d_control_handle == 0 ) {
+          d_control_handle = hid_open ( FCDPROPLUS_VENDOR_ID ,FCDPROPLUS_PRODUCT_ID,NULL );
+          if(d_control_handle == NULL ) {
+            throw std::runtime_error("Could not reopen Controlpart.");
+          }
+        }
+
         aucBuf[0] = 0; // Report ID. Ignored by HID Class firmware as only config'd for one report
         aucBuf[1] = FCD_HID_CMD_SET_LNA_GAIN;
         if(gain !=0 ) {
@@ -230,6 +244,13 @@ namespace gr {
     void
     fcdproplus_impl::set_mixer_gain(int gain)
     {
+        if(d_control_handle == 0 ) {
+          d_control_handle = hid_open ( FCDPROPLUS_VENDOR_ID ,FCDPROPLUS_PRODUCT_ID,NULL );
+          if(d_control_handle == NULL ) {
+            throw std::runtime_error("Could not reopen Controlpart.");
+          }
+        }
+
         aucBuf[0] = 0; // Report ID. Ignored by HID Class firmware as only config'd for one report
         aucBuf[1] = FCD_HID_CMD_SET_MIXER_GAIN;
         if(gain !=0 ) {
@@ -275,6 +296,13 @@ namespace gr {
             std::cerr <<"Invalid If gain value: "<< gain <<std::endl;
             return;
         }
+        if(d_control_handle == 0 ) {
+          d_control_handle = hid_open ( FCDPROPLUS_VENDOR_ID ,FCDPROPLUS_PRODUCT_ID,NULL );
+          if(d_control_handle == NULL ) {
+              throw std::runtime_error("Could not reopen Controlpart.");
+          }
+        }
+
         aucBuf[0] = 0; // Report ID. Ignored by HID Class firmware as only config'd for one report
         aucBuf[1] = FCD_HID_CMD_SET_IF_GAIN;
         aucBuf[2] = (unsigned char) gain;
