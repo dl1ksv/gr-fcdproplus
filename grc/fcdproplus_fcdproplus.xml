@@ -2,7 +2,7 @@
 <block>
   <name>Funcube dongle Pro+ source</name>
   <key>fcdproplus_fcdproplus</key>
-  <category>Sources</category>
+  <category>FCD</category>
    <throttle>1</throttle>
   <import>import fcdproplus</import>
   <make>fcdproplus.fcdproplus($device_name,$unit)
