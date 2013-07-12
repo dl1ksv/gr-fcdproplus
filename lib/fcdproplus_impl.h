@@ -22,7 +22,7 @@
 #define INCLUDED_FCDPROPLUS_FCDPROPLUS_IMPL_H
 
 #include <fcdproplus/fcdproplus.h>
-#include <gr_audio_source.h>
+#include <gnuradio/audio/source.h>
 #include "hidapi.h"
 
 namespace gr {
@@ -31,7 +31,7 @@ namespace gr {
     class fcdproplus_impl : public fcdproplus
     {
     private:
-      audio_source::sptr fcd;                   /*!< The audio input source */
+      gr::audio::source::sptr fcd;                   /*!< The audio input source */
       hid_device *d_control_handle;             /*!< handle to control the device, set frequency, etc */
       unsigned int d_freq_req;                           /*!< The latest requested frequency in Khz */
       unsigned char aucBuf[65];                 /*!< Buffers to read/write control messages to the dongle */

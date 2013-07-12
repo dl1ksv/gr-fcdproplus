@@ -35,7 +35,7 @@ list(APPEND fcdproplus_sources
 )
 
 add_library(gnuradio-fcdproplus SHARED ${fcdproplus_sources})
-target_link_libraries(gnuradio-fcdproplus ${Boost_LIBRARIES} ${GRUEL_LIBRARIES} ${GNURADIO_CORE_LIBRARIES} ${GNURADIO_AUDIO_LIBRARIES} udev)
+target_link_libraries(gnuradio-fcdproplus ${Boost_LIBRARIES}  ${GNURADIO_RUNTIME_LIBRARIES} ${GNURADIO_BLOCKS_LIBRARIES} ${GNURADIO_AUDIO_LIBRARIES} udev)
 set_target_properties(gnuradio-fcdproplus PROPERTIES DEFINE_SYMBOL "gnuradio_fcdproplus_EXPORTS")
 MESSAGE(STATUS "Audio LIBS: ${GNURADIO_AUDIO_LIBRARIES}")
 ########################################################################

@@ -23,7 +23,7 @@
 #define INCLUDED_FCDPROPLUS_FCDPROPLUS_H
 
 #include <fcdproplus/api.h>
-#include <gr_hier_block2.h>
+#include <gnuradio/hier_block2.h>
 
 #include <string>
 
@@ -43,7 +43,7 @@ namespace gr {
    * \ingroup fcdproplus
    *
    */
-    class FCDPROPLUS_API fcdproplus : virtual public gr_hier_block2
+    class FCDPROPLUS_API fcdproplus : virtual public hier_block2
     {
     public:
        typedef boost::shared_ptr<fcdproplus> sptr;

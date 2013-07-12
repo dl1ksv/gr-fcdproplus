@@ -22,8 +22,8 @@
 #include "config.h"
 #endif
 
-#include <gr_io_signature.h>
-#include <gr_float_to_complex.h>
+#include <gnuradio/io_signature.h>
+#include <gnuradio/blocks/float_to_complex.h>
 
 #include "fcdproplus_impl.h"
 #include "fcdcmd.h"
@@ -37,7 +37,7 @@
 #define FCDPROPLUS_PRODUCT_ID   0xfb31
 
 #define TIMEOUT 5000
-
+using namespace std;
 namespace gr {
   namespace fcdproplus {
 
@@ -51,13 +51,13 @@ namespace gr {
      * The private constructor
      */
     fcdproplus_impl::fcdproplus_impl(const std::string user_device_name,int unit)
-      : gr_hier_block2("fcdproplus",
-		      gr_make_io_signature(0, 0, 0),
-              gr_make_io_signature(1, 1, sizeof (gr_complex)))
+      : gr::hier_block2("fcdproplus",
+                    gr::io_signature::make(0, 0, 0),
+                    gr::io_signature::make(1, 1, sizeof (gr_complex)))
     {
         std::string device_name;
         bool success;
-        gr_float_to_complex_sptr f2c;
+        gr::blocks::float_to_complex::sptr f2c;
         success = false;
         d_freq_req=0;
         d_corr=0;
@@ -65,7 +65,7 @@ namespace gr {
         if(!user_device_name.empty())  {
             try {
                  /* Audio source; sample rate fixed at 192kHz */
-                 fcd = audio_make_source(192000, user_device_name, true);
+                 fcd = gr::audio::source::make(192000, user_device_name, true);
                  success=true;
             }
             catch (std::exception ) {
@@ -105,7 +105,7 @@ namespace gr {
             throw std::runtime_error("Alsa not found.");
             }
             /* Audio source; sample rate fixed at 192kHz */
-            fcd = audio_make_source(192000, device_name, true);
+            fcd = gr::audio::source::make(192000, device_name, true);
         }
         if(success) {
           std::cerr <<"Opened: " << device_name << std::endl;
@@ -116,7 +116,7 @@ namespace gr {
 
 
         /* block to convert stereo audio to a complex stream */
-        f2c = gr_make_float_to_complex(1);
+        f2c = gr::blocks::float_to_complex::make(1);
 
         connect(fcd, 0, f2c, 0);
         connect(fcd, 1, f2c, 1);

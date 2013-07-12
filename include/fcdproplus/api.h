@@ -22,7 +22,7 @@
 #ifndef INCLUDED_FCDPROPLUS_API_H
 #define INCLUDED_FCDPROPLUS_API_H
 
-#include <gruel/attributes.h>
+#include <gnuradio/attributes.h>
 
 #ifdef gnuradio_fcdproplus_EXPORTS
 #  define FCDPROPLUS_API __GR_ATTR_EXPORT

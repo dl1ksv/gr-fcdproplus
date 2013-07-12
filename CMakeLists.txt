@@ -88,37 +88,30 @@ set(GRC_BLOCKS_DIR      ${GR_PKG_DATA_DIR}/grc/blocks)
 ########################################################################
 # Find gnuradio build dependencies
 ########################################################################
-find_package(Gruel)
-find_package(GnuradioCore)
-find_package(GnuradioAudio)
-find_package(CppUnit)
-if(NOT GRUEL_FOUND)
-    message(FATAL_ERROR "Gruel required to compile fcdproplus")
-endif()
+set(GR_REQUIRED_MODULES RUNTIME BLOCKS AUDIO)
 
-if(NOT GNURADIO_CORE_FOUND)
+
+find_package(Gnuradio)
+find_package(ALSA)
+
+if(NOT GNURADIO_RUNTIME_FOUND)
     message(FATAL_ERROR "GnuRadio Core required to compile fcdproplus")
 endif()
 
-if(NOT CPPUNIT_FOUND)
-    message(FATAL_ERROR "CppUnit required to compile fcdproplus")
-endif()
 ########################################################################
 # Setup the include and linker paths
 ########################################################################
 include_directories(
     ${CMAKE_SOURCE_DIR}/include
     ${Boost_INCLUDE_DIRS}
-    ${GRUEL_INCLUDE_DIRS}
-    ${CPPUNIT_INCLUDE_DIRS}
-    ${GNURADIO_CORE_INCLUDE_DIRS}
+    ${GNURADIO_RUNTIME_INCLUDE_DIRS}
+#    ${GNURADIO_BLOCKS_INCLUDE_DIRS}
 )
 
 link_directories(
     ${Boost_LIBRARY_DIRS}
-    ${GRUEL_LIBRARY_DIRS}
-    ${CPPUNIT_LIBRARY_DIRS}
-    ${GNURADIO_CORE_LIBRARY_DIRS}
+    ${GNURADIO_RUNTIME_LIBRARY_DIRS}
+    ${GNURADIO_BLOCKS_LIBRARY_DIRS}
 )
 
 # Set component parameters
@@ -172,5 +165,5 @@ install(
 ########################################################################
 # Print Summary
 ########################################################################
-MESSAGE(STATUS "GNURADIO LIBS IN: ${GNURADIO_CORE_LIBRARY_DIRS}")
+MESSAGE(STATUS "GNURADIO LIBS IN: ${GNURADIO_RUNTIME_LIBRARY_DIRS}")
 MESSAGE(STATUS "Using install prefix: ${CMAKE_INSTALL_PREFIX}")
