@@ -93,9 +93,13 @@ set(GR_REQUIRED_MODULES RUNTIME BLOCKS AUDIO)
 
 find_package(Gnuradio)
 find_package(ALSA)
+find_package(USB)
 
 if(NOT GNURADIO_RUNTIME_FOUND)
     message(FATAL_ERROR "GnuRadio Core required to compile fcdproplus")
+endif()
+if(NOT LIBUSB_FOUND)
+    message(FATAL_ERROR "libusb required to compile fcdproplus")
 endif()
 
 ########################################################################
@@ -110,7 +114,6 @@ include_directories(
 
 link_directories(
     ${Boost_LIBRARY_DIRS}
-    ${GNURADIO_RUNTIME_LIBRARY_DIRS}
     ${GNURADIO_BLOCKS_LIBRARY_DIRS}
 )
 
@@ -165,5 +168,6 @@ install(
 ########################################################################
 # Print Summary
 ########################################################################
-MESSAGE(STATUS "GNURADIO LIBS IN: ${GNURADIO_RUNTIME_LIBRARY_DIRS}")
+MESSAGE(STATUS "GNURADIO LIBS IN: ${GNURADIO_BLOCKS_LIBRARY_DIRS}")
+MESSAGE(STATUS "GNURADIO INCLUDES IN: ${GNURADIO_RUNTIME_INCLUDE_DIRS}")
 MESSAGE(STATUS "Using install prefix: ${CMAKE_INSTALL_PREFIX}")

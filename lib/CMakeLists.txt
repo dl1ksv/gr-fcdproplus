@@ -27,7 +27,8 @@ include_directories(
         ${LIBUSB_INCLUDE_DIR}
         ${CMAKE_CURRENT_SOURCE_DIR}/hid
 )
-link_directories(${Boost_LIBRARY_DIRS})
+
+link_directories(${Boost_LIBRARY_DIRS} )
 
 list(APPEND fcdproplus_sources
     fcdproplus_impl.cc
@@ -35,7 +36,7 @@ list(APPEND fcdproplus_sources
 )
 
 add_library(gnuradio-fcdproplus SHARED ${fcdproplus_sources})
-target_link_libraries(gnuradio-fcdproplus ${Boost_LIBRARIES}  ${GNURADIO_RUNTIME_LIBRARIES} ${GNURADIO_BLOCKS_LIBRARIES} ${GNURADIO_AUDIO_LIBRARIES} udev)
+target_link_libraries(gnuradio-fcdproplus ${Boost_LIBRARIES}  ${GNURADIO_RUNTIME_LIBRARIES} ${GNURADIO_BLOCKS_LIBRARIES} ${GNURADIO_AUDIO_LIBRARIES} ${LIBUSB_LIBRARIES})
 set_target_properties(gnuradio-fcdproplus PROPERTIES DEFINE_SYMBOL "gnuradio_fcdproplus_EXPORTS")
 MESSAGE(STATUS "Audio LIBS: ${GNURADIO_AUDIO_LIBRARIES}")
 ########################################################################
