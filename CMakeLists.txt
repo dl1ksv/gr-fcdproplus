@@ -90,8 +90,7 @@ set(GRC_BLOCKS_DIR      ${GR_PKG_DATA_DIR}/grc/blocks)
 ########################################################################
 set(GR_REQUIRED_MODULES RUNTIME BLOCKS AUDIO)
 
-
-find_package(Gnuradio)
+find_package(Gnuradio "3.7")
 find_package(ALSA)
 find_package(USB)
 
