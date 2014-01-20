@@ -32,11 +32,23 @@ link_directories(${Boost_LIBRARY_DIRS} )
 
 list(APPEND fcdproplus_sources
     fcdproplus_impl.cc
-    hid/hid.c
 )
+if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+  list(APPEND fcdproplus_sources ${CMAKE_CURRENT_SOURCE_DIR}/hid/hidmac.c)
+else()
+  list(APPEND fcdproplus_sources ${CMAKE_CURRENT_SOURCE_DIR}/hid/hid.c)
+endif()
 
+if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+  FIND_LIBRARY(IOKIT_LIBRARY IOKit)
+  list(APPEND fcdproplus_libs ${IOKIT_LIBRARY})
+else()
+  list(APPEND fcdproplus_libs ${LIBUSB_LIBRARIES} )
+endif()
 add_library(gnuradio-fcdproplus SHARED ${fcdproplus_sources})
-target_link_libraries(gnuradio-fcdproplus ${Boost_LIBRARIES}  ${GNURADIO_RUNTIME_LIBRARIES} ${GNURADIO_BLOCKS_LIBRARIES} ${GNURADIO_AUDIO_LIBRARIES} ${LIBUSB_LIBRARIES})
+target_link_libraries(gnuradio-fcdproplus ${Boost_LIBRARIES}
+${GNURADIO_RUNTIME_LIBRARIES} ${GNURADIO_BLOCKS_LIBRARIES}
+${GNURADIO_AUDIO_LIBRARIES} ${fcdproplus_libs})
 set_target_properties(gnuradio-fcdproplus PROPERTIES DEFINE_SYMBOL "gnuradio_fcdproplus_EXPORTS")
 MESSAGE(STATUS "Audio LIBS: ${GNURADIO_AUDIO_LIBRARIES}")
 ########################################################################

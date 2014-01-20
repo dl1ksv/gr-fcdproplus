@@ -17,6 +17,15 @@
 # the Free Software Foundation, Inc., 51 Franklin Street,
 # Boston, MA 02110-1301, USA.
 
+if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+  set(DEVICE_STRING "FUNcube Dongle V2.0")
+else()
+  set(DEVICE_STRING "")
+endif()
+configure_file (
+	fcdproplus_fcdproplus.xml.in
+	fcdproplus_fcdproplus.xml
+)
 install(FILES
-    fcdproplus_fcdproplus.xml DESTINATION share/gnuradio/grc/blocks
+    ${CMAKE_BINARY_DIR}/grc/fcdproplus_fcdproplus.xml DESTINATION share/gnuradio/grc/blocks
 )

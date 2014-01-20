@@ -46,7 +46,6 @@ if(CMAKE_COMPILER_IS_GNUCXX AND NOT WIN32)
     #http://gcc.gnu.org/wiki/Visibility
     add_definitions(-fvisibility=hidden)
 endif()
-
 ########################################################################
 # Find boost
 ########################################################################
@@ -91,15 +90,17 @@ set(GRC_BLOCKS_DIR      ${GR_PKG_DATA_DIR}/grc/blocks)
 set(GR_REQUIRED_MODULES RUNTIME BLOCKS AUDIO)
 
 find_package(Gnuradio "3.7")
-find_package(ALSA)
-find_package(USB)
 
 if(NOT GNURADIO_RUNTIME_FOUND)
     message(FATAL_ERROR "GnuRadio Core required to compile fcdproplus")
 endif()
-if(NOT LIBUSB_FOUND)
-    message(FATAL_ERROR "libusb required to compile fcdproplus")
-endif()
+if( ${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+    find_package(ALSA)
+    find_package(USB)
+    if(NOT LIBUSB_FOUND)
+        message(FATAL_ERROR "libusb required to compile fcdproplus")
+    endif()
+endif()    
 
 ########################################################################
 # Setup the include and linker paths
@@ -108,7 +109,6 @@ include_directories(
     ${CMAKE_SOURCE_DIR}/include
     ${Boost_INCLUDE_DIRS}
     ${GNURADIO_RUNTIME_INCLUDE_DIRS}
-#    ${GNURADIO_BLOCKS_INCLUDE_DIRS}
 )
 
 link_directories(
@@ -138,7 +138,6 @@ add_custom_target(uninstall
 ########################################################################
 add_subdirectory(include/fcdproplus)
 add_subdirectory(lib)
-add_subdirectory(lib/hid)
 add_subdirectory(swig)
 add_subdirectory(python)
 add_subdirectory(grc)
@@ -167,6 +166,6 @@ install(
 ########################################################################
 # Print Summary
 ########################################################################
-MESSAGE(STATUS "GNURADIO LIBS IN: ${GNURADIO_BLOCKS_LIBRARY_DIRS}")
+MESSAGE(STATUS "Building gr-fcdproplus for ${CMAKE_SYSTEM_NAME} ")
 MESSAGE(STATUS "GNURADIO INCLUDES IN: ${GNURADIO_RUNTIME_INCLUDE_DIRS}")
 MESSAGE(STATUS "Using install prefix: ${CMAKE_INSTALL_PREFIX}")
