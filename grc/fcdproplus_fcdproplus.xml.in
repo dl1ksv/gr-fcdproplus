@@ -1,0 +1,105 @@
+<?xml version="1.0"?>
+<block>
+  <name>Funcube dongle Pro+ source</name>
+  <key>fcdproplus_fcdproplus</key>
+  <category>FCD</category>
+   <throttle>1</throttle>
+  <import>import fcdproplus</import>
+  <make>fcdproplus.fcdproplus($device_name,$unit)
+self.$(id).set_lna($lnaswitch)
+self.$(id).set_mixer_gain($mixergainswitch)
+self.$(id).set_if_gain($if_gain)
+self.$(id).set_freq_corr($ppm)
+self.$(id).set_freq($freq)
+  </make>
+  <callback>set_freq($freq)</callback>
+  <callback>set_lna($lnaswitch)</callback>
+  <callback>set_mixer_gain($mixergainswitch)</callback>
+  <callback>set_freq_corr($ppm)</callback>
+  <callback>set_if_gain($if_gain)</callback>
+
+  <!-- Make one 'param' node for every Parameter you want settable from the GUI.
+       Sub-nodes:
+       * name
+       * key (makes the value accessible as $keyname, e.g. in the make node)
+       * type -->
+  <param>
+    <name>Device Name</name>
+    <key>device_name</key>
+    <value>@DEVICE_STRING@</value>
+    <type>string</type>
+  </param>
+  <param>
+    <name>Unit</name>
+    <key>unit</key>
+    <value>1</value>
+    <type>int</type>
+  </param>
+  <param>
+    <name>Lna enable,disable</name>
+    <key>lnaswitch</key>
+    <value>0</value>
+    <type>int</type>
+  </param>
+  <param>
+    <name>Mixergain enable/disable</name>
+    <key>mixergainswitch</key>
+    <value>0</value>
+    <type>int</type>
+  </param>
+  <param>
+    <name>Frequency (Unit Hz)</name>
+    <key>freq</key>
+    <value>137500000</value>
+    <type>real</type>
+  </param>
+  <param>
+    <name>Frequency corr. (ppm)</name>
+    <key>ppm</key>
+    <value>0</value>
+    <type>int</type>
+  </param>
+  <param>
+    <name>If gain</name>
+    <key>if_gain</key>
+    <value>0</value>
+    <type>int</type>
+  </param>
+      <check>($unit == 1) or ($unit == 1000 ) </check>
+      <check>($freq &gt;= 150000/$unit) and ($freq &lt;= 25e8/$unit)</check>
+      <check>($if_gain &gt;=0) and ($if_gain &lt; 60)</check>
+  <!-- Make one 'sink' node per input. Sub-nodes:
+       * name (an identifier for the GUI)
+       * type
+       * vlen
+       * optional (set to 1 for optional inputs) -->
+
+  <!-- Make one 'source' node per output. Sub-nodes:
+       * name (an identifier for the GUI)
+       * type
+       * vlen
+       * optional (set to 1 for optional inputs) -->
+  <source>
+    <name>out</name>
+    <type>complex</type>
+  </source>
+  <doc>
+This block wraps the Funcube Dongle Pro+ USB alsa audio input and the USB control interface \
+into one convenient GNU Radio source block.
+
+The sample rate is fixed at 192 ksps.
+
+The sound device is taken from the device_name. This should be the alsa device name, like \
+hw:1 or plughw:1,0.
+If the device name is empty or invalid the device will beautodetected\
+by looking into /proc/asound/cards .
+The frequency is expressed in Unit Hz, that means\
+Unit = 1 Hz, Unit = 1000 Khz
+
+The LNA can be switched on and off.
+
+The mixer gain can be switched on and off.
+
+The if gain can be set between 0 and 59 ( integer values) .
+ </doc>
+</block>
