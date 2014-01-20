@@ -1,4 +1,4 @@
-# Copyright 2011,2012 Free Software Foundation, Inc.
+# Copyright 2011-2014 Free Software Foundation, Inc.
 #
 # This file is part of GNU Radio
 #
@@ -87,7 +87,7 @@ set(GRC_BLOCKS_DIR      ${GR_PKG_DATA_DIR}/grc/blocks)
 ########################################################################
 # Find gnuradio build dependencies
 ########################################################################
-set(GR_REQUIRED_MODULES RUNTIME BLOCKS AUDIO)
+set(GR_REQUIRED_MODULES RUNTIME PMT BLOCKS AUDIO)
 
 find_package(Gnuradio "3.7")
 
@@ -100,21 +100,26 @@ if( ${CMAKE_SYSTEM_NAME} MATCHES "Linux")
     if(NOT LIBUSB_FOUND)
         message(FATAL_ERROR "libusb required to compile fcdproplus")
     endif()
-endif()    
+endif()
 
 ########################################################################
 # Setup the include and linker paths
 ########################################################################
-include_directories(
-    ${CMAKE_SOURCE_DIR}/include
+set(COMMON_INCLUDE_DIRS
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
     ${Boost_INCLUDE_DIRS}
     ${GNURADIO_RUNTIME_INCLUDE_DIRS}
 )
 
-link_directories(
+set(COMMON_LIB_DIRS
     ${Boost_LIBRARY_DIRS}
     ${GNURADIO_BLOCKS_LIBRARY_DIRS}
 )
+
+if( ${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+    list(APPEND COMMON_INCLUDE_DIRS ${LIBUSB_INCLUDE_DIR})
+    list(APPEND COMMON_LIB_DIRS ${LIBUSB_LIB_DIR})
+endif()
 
 # Set component parameters
 #set(GR_FCDPROPLUS_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/include CACHE INTERNAL "" FORCE)

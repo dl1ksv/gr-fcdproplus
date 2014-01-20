@@ -1,4 +1,4 @@
-# Copyright 2011,2012 Free Software Foundation, Inc.
+# Copyright 2011-2014 Free Software Foundation, Inc.
 #
 # This file is part of GNU Radio
 #
@@ -23,37 +23,56 @@
 include(GrPlatform) #define LIB_SUFFIX
 
 include_directories(
-        ${Boost_INCLUDE_DIR}
-        ${LIBUSB_INCLUDE_DIR}
-        ${CMAKE_CURRENT_SOURCE_DIR}/hid
+    ${CMAKE_CURRENT_SOURCE_DIR}/hid
+    ${COMMON_INCLUDE_DIRS} 
 )
 
-link_directories(${Boost_LIBRARY_DIRS} )
+link_directories(${COMMON_LIB_DIRS})
 
 list(APPEND fcdproplus_sources
     fcdproplus_impl.cc
 )
-if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+
+if(APPLE)
   list(APPEND fcdproplus_sources ${CMAKE_CURRENT_SOURCE_DIR}/hid/hidmac.c)
 else()
   list(APPEND fcdproplus_sources ${CMAKE_CURRENT_SOURCE_DIR}/hid/hid.c)
 endif()
 
-if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+if(APPLE)
   FIND_LIBRARY(IOKIT_LIBRARY IOKit)
   list(APPEND fcdproplus_libs ${IOKIT_LIBRARY})
+  FIND_LIBRARY(COREFOUNDATION_LIBRARY CoreFoundation)
+  list(APPEND fcdproplus_libs ${COREFOUNDATION_LIBRARY})
 else()
   list(APPEND fcdproplus_libs ${LIBUSB_LIBRARIES} )
 endif()
+
 add_library(gnuradio-fcdproplus SHARED ${fcdproplus_sources})
-target_link_libraries(gnuradio-fcdproplus ${Boost_LIBRARIES}
-${GNURADIO_RUNTIME_LIBRARIES} ${GNURADIO_BLOCKS_LIBRARIES}
-${GNURADIO_AUDIO_LIBRARIES} ${fcdproplus_libs})
+
+target_link_libraries(gnuradio-fcdproplus ${fcdproplus_libs} ${Boost_LIBRARIES}
+  ${GNURADIO_RUNTIME_LIBRARIES} ${GNURADIO_BLOCKS_LIBRARIES}
+  ${GNURADIO_AUDIO_LIBRARIES}
+)
+
+if(APPLE)
+  # for some reason on OSX, linking to gnuradio-runtime also requires
+  # linking with gnuradio-pmt; this does not seem necessary on Linux.
+  target_link_libraries(gnuradio-fcdproplus ${GNURADIO_PMT_LIBRARIES})
+  # set install_name self-id correctly
+  SET_TARGET_PROPERTIES(gnuradio-fcdproplus PROPERTIES
+      INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/${LIBRARY_DIR}"
+  )
+endif()
+
 set_target_properties(gnuradio-fcdproplus PROPERTIES DEFINE_SYMBOL "gnuradio_fcdproplus_EXPORTS")
+
 MESSAGE(STATUS "Audio LIBS: ${GNURADIO_AUDIO_LIBRARIES}")
+
 ########################################################################
 # Install built library files
 ########################################################################
+
 install(TARGETS gnuradio-fcdproplus
     LIBRARY DESTINATION lib${LIB_SUFFIX} # .so/.dylib file
     ARCHIVE DESTINATION lib${LIB_SUFFIX} # .lib file

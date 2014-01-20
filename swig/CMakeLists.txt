@@ -1,4 +1,4 @@
-# Copyright 2011 Free Software Foundation, Inc.
+# Copyright 2011-2014 Free Software Foundation, Inc.
 #
 # This file is part of GNU Radio
 #
@@ -32,7 +32,7 @@ include(GrPython)
 # Setup swig generation
 ########################################################################
 foreach(incdir ${GNURADIO_RUNTIME_INCLUDE_DIRS})
-    list(APPEND GR_SWIG_INCLUDE_DIRS ${incdir}/gnuradio/swig)
+    list(APPEND GR_SWIG_INCLUDE_DIRS ${COMMON_INCLUDE_DIRS} ${incdir}/gnuradio/swig)
 endforeach(incdir)
 
 set(GR_SWIG_LIBRARIES gnuradio-fcdproplus)
