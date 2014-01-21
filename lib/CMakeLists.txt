@@ -61,7 +61,7 @@ if(APPLE)
   target_link_libraries(gnuradio-fcdproplus ${GNURADIO_PMT_LIBRARIES})
   # set install_name self-id correctly
   SET_TARGET_PROPERTIES(gnuradio-fcdproplus PROPERTIES
-      INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/${LIBRARY_DIR}"
+      INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/${GR_LIBRARY_DIR}"
   )
 endif()
 
