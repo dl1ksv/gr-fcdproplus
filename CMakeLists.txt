@@ -102,6 +102,8 @@ if( ${CMAKE_SYSTEM_NAME} MATCHES "Linux")
     endif()
 endif()
 
+find_package(Doxygen)
+
 ########################################################################
 # Setup the include and linker paths
 ########################################################################
