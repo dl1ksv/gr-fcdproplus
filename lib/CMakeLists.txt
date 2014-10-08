@@ -66,6 +66,8 @@ if(APPLE)
 endif()
 
 set_target_properties(gnuradio-fcdproplus PROPERTIES DEFINE_SYMBOL "gnuradio_fcdproplus_EXPORTS")
+set_target_properties(gnuradio-fcdproplus PROPERTIES SOVERSION 0)
+set_target_properties(gnuradio-fcdproplus PROPERTIES VERSION 0.0.0)
 
 MESSAGE(STATUS "Audio LIBS: ${GNURADIO_AUDIO_LIBRARIES}")
 
