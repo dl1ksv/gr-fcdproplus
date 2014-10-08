@@ -24,7 +24,7 @@
 
 #define FCD_RESET                    255 // Reset to bootloader
 
-typedef enum 
+typedef enum
 {
 	TRFE_0_4,
 	TRFE_4_8,
