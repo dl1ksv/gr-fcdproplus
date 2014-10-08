@@ -23,7 +23,7 @@
 
 #include <fcdproplus/fcdproplus.h>
 #include <gnuradio/audio/source.h>
-#include "hidapi.h"
+#include <hidapi/hidapi.h>
 
 namespace gr {
   namespace fcdproplus {
