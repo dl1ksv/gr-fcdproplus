@@ -22,10 +22,16 @@
 ########################################################################
 include(GrPlatform) #define LIB_SUFFIX
 
+if(APPLE)
 include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/hid
     ${COMMON_INCLUDE_DIRS} 
 )
+else()
+include_directories(
+    ${COMMON_INCLUDE_DIRS} 
+)
+endif()
 
 link_directories(${COMMON_LIB_DIRS})
 
@@ -35,8 +41,6 @@ list(APPEND fcdproplus_sources
 
 if(APPLE)
   list(APPEND fcdproplus_sources ${CMAKE_CURRENT_SOURCE_DIR}/hid/hidmac.c)
-else()
-  list(APPEND fcdproplus_sources ${CMAKE_CURRENT_SOURCE_DIR}/hid/hid.c)
 endif()
 
 if(APPLE)
@@ -45,7 +49,8 @@ if(APPLE)
   FIND_LIBRARY(COREFOUNDATION_LIBRARY CoreFoundation)
   list(APPEND fcdproplus_libs ${COREFOUNDATION_LIBRARY})
 else()
-  list(APPEND fcdproplus_libs ${LIBUSB_LIBRARIES} )
+  FIND_LIBRARY(HIDAPI_LIBRARY hidapi-libusb)
+  list(APPEND fcdproplus_libs ${LIBUSB_LIBRARIES} ${HIDAPI_LIBRARY} )
 endif()
 
 add_library(gnuradio-fcdproplus SHARED ${fcdproplus_sources})
