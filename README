@@ -9,9 +9,9 @@ To control the device  the hidapi usb version is used.
 
 - gnuradio
 - alsa usb drivers activated
-- hidapi-libusb lib installed
-
-If you need the latest version bundled with the hidapi code use the release with_hidapi
+- hidapi-libusb 
+If the hidapi lib of your distro is installed the this hidapi version is used. Otherwise bundled code will be used.
+In case of MAC OSX this is hidmac.c otherwise hid.c
 
 2. Installation
 

@@ -22,17 +22,6 @@
 ########################################################################
 include(GrPlatform) #define LIB_SUFFIX
 
-if(APPLE)
-include_directories(
-    ${CMAKE_CURRENT_SOURCE_DIR}/hid
-    ${COMMON_INCLUDE_DIRS} 
-)
-else()
-include_directories(
-    ${COMMON_INCLUDE_DIRS} 
-)
-endif()
-
 link_directories(${COMMON_LIB_DIRS})
 
 list(APPEND fcdproplus_sources
@@ -40,19 +29,32 @@ list(APPEND fcdproplus_sources
 )
 
 if(APPLE)
-  list(APPEND fcdproplus_sources ${CMAKE_CURRENT_SOURCE_DIR}/hid/hidmac.c)
-endif()
-
-if(APPLE)
   FIND_LIBRARY(IOKIT_LIBRARY IOKit)
   list(APPEND fcdproplus_libs ${IOKIT_LIBRARY})
   FIND_LIBRARY(COREFOUNDATION_LIBRARY CoreFoundation)
   list(APPEND fcdproplus_libs ${COREFOUNDATION_LIBRARY})
-else()
-  FIND_LIBRARY(HIDAPI_LIBRARY hidapi-libusb)
-  list(APPEND fcdproplus_libs ${LIBUSB_LIBRARIES} ${HIDAPI_LIBRARY} )
 endif()
 
+FIND_LIBRARY(HIDAPI_LIBRARY hidapi-libusb)
+if( HiDAPI_LIBRARY_FOUND)
+  list(APPEND fcdproplus_libs ${LIBUSB_LIBRARIES} ${HIDAPI_LIBRARY} )
+  set_target_properties(gnuradio-fcdproplus PROPERTIES DEFINE_SYMBOL
+	  "SYSTEM_HIDAPI")
+  include_directories(
+	      ${COMMON_INCLUDE_DIRS} 
+	      )
+else()
+  include_directories(
+    ${CMAKE_CURRENT_SOURCE_DIR}/hid
+    ${COMMON_INCLUDE_DIRS} 
+  )
+  if(APPLE)
+    list(APPEND fcdproplus_sources
+    ${CMAKE_CURRENT_SOURCE_DIR}/hid/hidmac.c)
+  else()
+   list(APPEND fcdproplus_sources ${CMAKE_CURRENT_SOURCE_DIR}/hid/hid.c)
+  endif()
+endif()
 add_library(gnuradio-fcdproplus SHARED ${fcdproplus_sources})
 
 target_link_libraries(gnuradio-fcdproplus ${fcdproplus_libs} ${Boost_LIBRARIES}
