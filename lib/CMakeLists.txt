@@ -28,22 +28,22 @@ list(APPEND fcdproplus_sources
     fcdproplus_impl.cc
 )
 
-add_library(gnuradio-fcdproplus SHARED ${fcdproplus_sources})
-set_target_properties(gnuradio-fcdproplus PROPERTIES SOVERSION 0)
-set_target_properties(gnuradio-fcdproplus PROPERTIES VERSION 0.0.0)
-set_target_properties(gnuradio-fcdproplus PROPERTIES DEFINE_SYMBOL "gnuradio_fcdproplus_EXPORTS")
 
 if(APPLE)
   FIND_LIBRARY(IOKIT_LIBRARY IOKit)
   list(APPEND fcdproplus_libs ${IOKIT_LIBRARY})
   FIND_LIBRARY(COREFOUNDATION_LIBRARY CoreFoundation)
   list(APPEND fcdproplus_libs ${COREFOUNDATION_LIBRARY})
+else()
+ list(APPEND fcdproplus_libs ${LIBUSB_LIBRARIES} )
 endif()
 
 FIND_LIBRARY(HIDAPI_LIBRARY hidapi-libusb)
-if(NOT HiDAPI_LIBRARY_NOTFOUND)
+if(HIDAPI_LIBRARY)
   MESSAGE(STATUS "System Hidapi Lib ${HIDAPI_LIBRARY} is used")
-  list(APPEND fcdproplus_libs ${LIBUSB_LIBRARIES} ${HIDAPI_LIBRARY} )
+  add_library(gnuradio-fcdproplus SHARED ${fcdproplus_sources})
+  #  list(APPEND fcdproplus_libs ${LIBUSB_LIBRARIES} ${HIDAPI_LIBRARY} )
+  list(APPEND fcdproplus_libs  ${HIDAPI_LIBRARY} )
   set_target_properties(gnuradio-fcdproplus PROPERTIES COMPILE_DEFINITIONS 
 	  "SYSTEM_HIDAPI")
   include_directories(
@@ -61,7 +61,12 @@ else()
   else()
    list(APPEND fcdproplus_sources ${CMAKE_CURRENT_SOURCE_DIR}/hid/hid.c)
   endif()
+  add_library(gnuradio-fcdproplus SHARED ${fcdproplus_sources})
 endif()
+
+set_target_properties(gnuradio-fcdproplus PROPERTIES SOVERSION 0)
+set_target_properties(gnuradio-fcdproplus PROPERTIES VERSION 0.0.0)
+set_target_properties(gnuradio-fcdproplus PROPERTIES DEFINE_SYMBOL "gnuradio_fcdproplus_EXPORTS")
 
 target_link_libraries(gnuradio-fcdproplus ${fcdproplus_libs} ${Boost_LIBRARIES}
   ${GNURADIO_RUNTIME_LIBRARIES} ${GNURADIO_BLOCKS_LIBRARIES}

@@ -12,7 +12,7 @@ To control the device  the hidapi usb version is used.
 - hidapi-libusb 
 If the hidapi lib of your distro is installed then this hidapi version is used. Otherwise bundled code will be used.
 In case of MAC OSX this is hidmac.c otherwise hid.c
-
+( This new MAC Version is untested, due to a lack of access to MAC OSX. So reports of success or bugs are welcome. )
 2. Installation
 
 get the latest code from https://github.com/dl1ksv/gr-fcdproplus
