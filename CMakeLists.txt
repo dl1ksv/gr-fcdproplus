@@ -173,6 +173,13 @@ install(
 ########################################################################
 # Print Summary
 ########################################################################
+MESSAGE(STATUS "================ Build Summary ===================")
 MESSAGE(STATUS "Building gr-fcdproplus for ${CMAKE_SYSTEM_NAME} ")
 MESSAGE(STATUS "GNURADIO INCLUDES IN: ${GNURADIO_RUNTIME_INCLUDE_DIRS}")
 MESSAGE(STATUS "Using install prefix: ${CMAKE_INSTALL_PREFIX}")
+if(HIDAPI_LIBRARY)
+	  MESSAGE(STATUS "System Hidapi Lib ${HIDAPI_LIBRARY} is used")
+else()	  
+  MESSAGE(STATUS "Bundled hidapi is used")
+endif()  
+MESSAGE(STATUS "==================================================")
