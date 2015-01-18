@@ -87,7 +87,7 @@ set(GRC_BLOCKS_DIR      ${GR_PKG_DATA_DIR}/grc/blocks)
 ########################################################################
 # Find gnuradio build dependencies
 ########################################################################
-set(GR_REQUIRED_MODULES RUNTIME PMT BLOCKS AUDIO)
+set(GR_REQUIRED_COMPONENTS RUNTIME PMT BLOCKS AUDIO)
 
 find_package(Gnuradio "3.7")
 

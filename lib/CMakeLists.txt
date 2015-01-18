@@ -73,7 +73,7 @@ target_link_libraries(gnuradio-fcdproplus ${fcdproplus_libs} ${Boost_LIBRARIES}
   ${GNURADIO_AUDIO_LIBRARIES}
 )
 
-if(APPLE)
+#if(APPLE)
   # for some reason on OSX, linking to gnuradio-runtime also requires
   # linking with gnuradio-pmt; this does not seem necessary on Linux.
   target_link_libraries(gnuradio-fcdproplus ${GNURADIO_PMT_LIBRARIES})
@@ -81,7 +81,7 @@ if(APPLE)
   SET_TARGET_PROPERTIES(gnuradio-fcdproplus PROPERTIES
       INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/${GR_LIBRARY_DIR}"
   )
-endif()
+#endif()
 
 
 MESSAGE(STATUS "Audio LIBS: ${GNURADIO_AUDIO_LIBRARIES}")
