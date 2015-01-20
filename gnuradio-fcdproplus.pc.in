@@ -7,6 +7,7 @@ Name: @CPACK_PACKAGE_NAME@
 Description: @CPACK_PACKAGE_DESCRIPTION_SUMMARY@
 URL: http://github.com/dl1ksv/
 Version: 0.0.1
+Requires: gnuradio >= 3.7
 
 Requires: gnuradio-core gnuradio-audio
 Libs: -L${libdir} -lgnuradio-fcdproplus
