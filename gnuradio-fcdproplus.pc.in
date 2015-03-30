@@ -9,6 +9,6 @@ URL: http://github.com/dl1ksv/
 Version: 0.0.1
 Requires: gnuradio >= 3.7
 
-Requires: gnuradio-core gnuradio-audio
+Requires: gnuradio-runtime gnuradio-audio
 Libs: -L${libdir} -lgnuradio-fcdproplus
 Cflags: -I${includedir}
