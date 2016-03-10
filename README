@@ -43,8 +43,13 @@ SUBSYSTEMS=="usb" ATTRS{idVendor}=="04d8" ATTRS{idProduct}=="fb31" MODE:="0666"
 KERNEL=="hidraw*", ATTRS{busnum}=="1", ATTRS{idVendor}=="04d8", ATTRS{idProduct}=="fb56", MODE="0666"
 KERNEL=="hidraw*", ATTRS{busnum}=="1", ATTRS{idVendor}=="04d8", ATTRS{idProduct}=="fb31", MODE="0666"
 
+4. Usage
 
-4. Credits
+See the example of a simple fm receiver in the examples directory or see a more complex
+example in in gr-display
+
+
+5. Credits
 
 Some code is taken from qthid-4.1 by Alexandru Csete, OZ9AEC.
 The hid part is taken from
