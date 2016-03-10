@@ -21,14 +21,16 @@
 ########################################################################
 # Project setup
 ########################################################################
-cmake_minimum_required(VERSION 2.6)
-project(gr-fcdproplus CXX C)
-# Set the version information here
-set(VERSION_INFO_MAJOR_VERSION 0)
-set(VERSION_INFO_API_COMPAT    0)
-set(VERSION_INFO_MINOR_VERSION 1)
-set(VERSION_INFO_MAINT_VERSION git)
+########################################################################
+#
+# First look in the install directory for package config of gnuradio
+#
+########################################################################
+set( ENV{PKG_CONFIG_PATH} "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig:$ENV{PKG_CONFIG_PATH}")
 
+
+cmake_minimum_required(VERSION 3.0)
+project(gr-fcdproplus CXX C)
 
 #select the release build type by default to get optimization flags
 if(NOT CMAKE_BUILD_TYPE)
@@ -37,7 +39,6 @@ if(NOT CMAKE_BUILD_TYPE)
 endif(NOT CMAKE_BUILD_TYPE)
 set(CMAKE_BUILD_TYPE ${CMAKE_BUILD_TYPE} CACHE STRING "")
 
-list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/Modules)
 
 ########################################################################
 # Compiler specific setup
@@ -68,6 +69,30 @@ if(NOT Boost_FOUND)
 endif()
 
 ########################################################################
+# Find gnuradio build dependencies
+########################################################################
+set(GR_REQUIRED_COMPONENTS RUNTIME PMT BLOCKS AUDIO)
+find_package(Gnuradio "3.7" REQUIRED PATHS ${CMAKE_INSTALL_PREFIX}
+	NO_DEFAULT_PATH)
+if(NOT GNURADIO_RUNTIME_FOUND)
+    message(FATAL_ERROR "GnuRadio Core required to compile fcdproplus")
+endif()
+FIND_LIBRARY(HIDAPI_LIBRARY hidapi-libusb)
+########################################################################
+#
+# set search path for cmake modules to OOT, Gnuradio
+#
+########################################################################
+set( CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/Modules")
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_INSTALL_PREFIX}/lib/cmake/gnuradio")
+
+# Set the version information here
+set(VERSION_INFO_MAJOR_VERSION 3)
+set(VERSION_INFO_API_COMPAT    7)
+set(VERSION_INFO_MINOR_VERSION 2)
+set(VERSION_INFO_MAINT_VERSION 0)
+include(GrVersion) #setup version info
+########################################################################
 # Install directories
 ########################################################################
 include(GrPlatform) #define LIB_SUFFIX
@@ -84,22 +109,20 @@ set(GR_LIBEXEC_DIR      libexec)
 set(GR_PKG_LIBEXEC_DIR  ${GR_LIBEXEC_DIR}/${CMAKE_PROJECT_NAME})
 set(GRC_BLOCKS_DIR      ${GR_PKG_DATA_DIR}/grc/blocks)
 
-########################################################################
-# Find gnuradio build dependencies
-########################################################################
-set(GR_REQUIRED_COMPONENTS RUNTIME PMT BLOCKS AUDIO)
 
-find_package(Gnuradio "3.7")
-
-if(NOT GNURADIO_RUNTIME_FOUND)
-    message(FATAL_ERROR "GnuRadio Core required to compile fcdproplus")
-endif()
 if( ${CMAKE_SYSTEM_NAME} MATCHES "Linux")
     find_package(ALSA)
     find_package(USB)
     if(NOT LIBUSB_FOUND)
         message(FATAL_ERROR "libusb required to compile fcdproplus")
     endif()
+endif()
+find_package(SWIG)
+
+if(NOT SWIG_FOUND)
+    message(FATAL_ERROR "Swig required to build fcdproplus")
+    else()    
+	    message(STATUS "Swig version ${SWIG_VERSION} found")
 endif()
 
 find_package(Doxygen)
@@ -124,7 +147,6 @@ if( ${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 endif()
 
 # Set component parameters
-#set(GR_FCDPROPLUS_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/include CACHE INTERNAL "" FORCE)
 set(GR_FCDPROPLUS_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/include)
 set(GR_FCDPROPLUS_SWIG_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/swig CACHE INTERNAL "" FORCE)
 
@@ -148,7 +170,6 @@ add_subdirectory(lib)
 add_subdirectory(swig)
 add_subdirectory(python)
 add_subdirectory(grc)
-add_subdirectory(apps)
 add_subdirectory(docs)
 ########################################################################
 # Create Pkg Config File
@@ -173,13 +194,15 @@ install(
 ########################################################################
 # Print Summary
 ########################################################################
-MESSAGE(STATUS "================ Build Summary ===================")
-MESSAGE(STATUS "Building gr-fcdproplus for ${CMAKE_SYSTEM_NAME} ")
-MESSAGE(STATUS "GNURADIO INCLUDES IN: ${GNURADIO_RUNTIME_INCLUDE_DIRS}")
-MESSAGE(STATUS "Using install prefix: ${CMAKE_INSTALL_PREFIX}")
+MESSAGE(STATUS "================ Build Summary =========================")
+MESSAGE(STATUS "Building gr-fcdproplus : ${VERSION} / ${LIBVER} for ${CMAKE_SYSTEM_NAME} ")
+MESSAGE(STATUS "Using CMAKE Module path: ${CMAKE_MODULE_PATH}" )
+MESSAGE(STATUS "GNURADIO INCLUDES IN   : ${GNURADIO_RUNTIME_INCLUDE_DIRS}")
+MESSAGE(STATUS "Using install prefix   : ${CMAKE_INSTALL_PREFIX}")
+MESSAGE(STATUS "GNURADIO LIBS          : ${GNURADIO_AUDIO_LIBRARIES}")
 if(HIDAPI_LIBRARY)
 	  MESSAGE(STATUS "System Hidapi Lib ${HIDAPI_LIBRARY} is used")
 else()	  
   MESSAGE(STATUS "Bundled hidapi is used")
 endif()  
-MESSAGE(STATUS "==================================================")
+MESSAGE(STATUS "========================================================")

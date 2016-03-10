@@ -38,11 +38,8 @@ else()
  list(APPEND fcdproplus_libs ${LIBUSB_LIBRARIES} )
 endif()
 
-FIND_LIBRARY(HIDAPI_LIBRARY hidapi-libusb)
-if(HIDAPI_LIBRARY)
-  MESSAGE(STATUS "System Hidapi Lib ${HIDAPI_LIBRARY} is used")
+if(${HIDAPI_LIBRARY})
   add_library(gnuradio-fcdproplus SHARED ${fcdproplus_sources})
-  #  list(APPEND fcdproplus_libs ${LIBUSB_LIBRARIES} ${HIDAPI_LIBRARY} )
   list(APPEND fcdproplus_libs  ${HIDAPI_LIBRARY} )
   set_target_properties(gnuradio-fcdproplus PROPERTIES COMPILE_DEFINITIONS 
 	  "SYSTEM_HIDAPI")
@@ -50,7 +47,7 @@ if(HIDAPI_LIBRARY)
 	      ${COMMON_INCLUDE_DIRS} 
 	      )
 else()
-  MESSAGE(STATUS "Bundled hidapi is used")
+#  MESSAGE(STATUS "Bundled hidapi is used")
   include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/hid
     ${COMMON_INCLUDE_DIRS} 
@@ -64,8 +61,6 @@ else()
   add_library(gnuradio-fcdproplus SHARED ${fcdproplus_sources})
 endif()
 
-set_target_properties(gnuradio-fcdproplus PROPERTIES SOVERSION 0)
-set_target_properties(gnuradio-fcdproplus PROPERTIES VERSION 0.0.0)
 set_target_properties(gnuradio-fcdproplus PROPERTIES DEFINE_SYMBOL "gnuradio_fcdproplus_EXPORTS")
 
 target_link_libraries(gnuradio-fcdproplus ${fcdproplus_libs} ${Boost_LIBRARIES}
@@ -73,18 +68,20 @@ target_link_libraries(gnuradio-fcdproplus ${fcdproplus_libs} ${Boost_LIBRARIES}
   ${GNURADIO_AUDIO_LIBRARIES}
 )
 
-#if(APPLE)
-  # for some reason on OSX, linking to gnuradio-runtime also requires
-  # linking with gnuradio-pmt; this does not seem necessary on Linux.
-  target_link_libraries(gnuradio-fcdproplus ${GNURADIO_PMT_LIBRARIES})
-  # set install_name self-id correctly
+target_link_libraries(gnuradio-fcdproplus ${GNURADIO_PMT_LIBRARIES})
+if(APPLE)
   SET_TARGET_PROPERTIES(gnuradio-fcdproplus PROPERTIES
-      INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/${GR_LIBRARY_DIR}"
-  )
-#endif()
+      INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/${GR_LIBRARY_DIR}")
+  set_target_properties(gnuradio-fcdproplus PROPERTIES SOVERSION 0)
+  set_target_properties(gnuradio-fcdproplus PROPERTIES VERSION 0.0.0)
+  
+else(APPLE)
+ set_target_properties(gnuradio-fcdproplus PROPERTIES SOVERSION ${LIBVER})
+ set_target_properties(gnuradio-fcdproplus PROPERTIES VERSION 0.0.0 )
+endif(APPLE)
 
 
-MESSAGE(STATUS "Audio LIBS: ${GNURADIO_AUDIO_LIBRARIES}")
+#MESSAGE(STATUS "Audio LIBS: ${GNURADIO_AUDIO_LIBRARIES}")
 
 ########################################################################
 # Install built library files
