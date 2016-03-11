@@ -84,7 +84,15 @@ FIND_LIBRARY(HIDAPI_LIBRARY hidapi-libusb)
 #
 ########################################################################
 set( CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/Modules")
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_INSTALL_PREFIX}/lib/cmake/gnuradio")
+include(FindGnuradioModules)
+
+if(${GNURADIO_MODULE_DIRECTORY} STREQUAL "GNURADIO_MODULE_DIRECTORY-NOTFOUND")
+	message(FATAL_ERROR "Cannot find gnuradio cmake Modules directory")
+else()
+	message(STATUS "Modules found in ${GNURADIO_MODULE_DIRECTORY}")
+endif()	
+list(APPEND CMAKE_MODULE_PATH "${GNURADIO_MODULE_DIRECTORY}" )
+#list(APPEND CMAKE_MODULE_PATH "${CMAKE_INSTALL_PREFIX}/lib/cmake/gnuradio")
 
 # Set the version information here
 set(VERSION_INFO_MAJOR_VERSION 3)
