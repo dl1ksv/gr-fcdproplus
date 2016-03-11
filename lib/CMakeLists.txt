@@ -37,8 +37,7 @@ if(APPLE)
 else()
  list(APPEND fcdproplus_libs ${LIBUSB_LIBRARIES} )
 endif()
-
-if(${HIDAPI_LIBRARY})
+if(HIDAPI_LIBRARY)
   add_library(gnuradio-fcdproplus SHARED ${fcdproplus_sources})
   list(APPEND fcdproplus_libs  ${HIDAPI_LIBRARY} )
   set_target_properties(gnuradio-fcdproplus PROPERTIES COMPILE_DEFINITIONS 
