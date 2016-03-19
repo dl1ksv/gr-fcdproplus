@@ -92,7 +92,6 @@ else()
 	message(STATUS "Modules found in ${GNURADIO_MODULE_DIRECTORY}")
 endif()	
 list(APPEND CMAKE_MODULE_PATH "${GNURADIO_MODULE_DIRECTORY}" )
-#list(APPEND CMAKE_MODULE_PATH "${CMAKE_INSTALL_PREFIX}/lib/cmake/gnuradio")
 
 # Set the version information here
 set(VERSION_INFO_MAJOR_VERSION 3)
@@ -203,7 +202,8 @@ install(
 # Print Summary
 ########################################################################
 MESSAGE(STATUS "================ Build Summary =========================")
-MESSAGE(STATUS "Building gr-fcdproplus : ${VERSION} / ${LIBVER} for ${CMAKE_SYSTEM_NAME} ")
+MESSAGE(STATUS "Building gr-fcdproplus : ${LIBVER} for ${CMAKE_SYSTEM_NAME} ")
+MESSAGE(STATUS "Build for gnuradio:    : ${Gnuradio_VERSION}")
 MESSAGE(STATUS "Using CMAKE Module path: ${CMAKE_MODULE_PATH}" )
 MESSAGE(STATUS "GNURADIO INCLUDES IN   : ${GNURADIO_RUNTIME_INCLUDE_DIRS}")
 MESSAGE(STATUS "Using install prefix   : ${CMAKE_INSTALL_PREFIX}")

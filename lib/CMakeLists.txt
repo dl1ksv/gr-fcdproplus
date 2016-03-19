@@ -21,6 +21,7 @@
 # Setup library
 ########################################################################
 include(GrPlatform) #define LIB_SUFFIX
+include(GrMiscUtils)
 
 link_directories(${COMMON_LIB_DIRS})
 
@@ -60,7 +61,6 @@ else()
   add_library(gnuradio-fcdproplus SHARED ${fcdproplus_sources})
 endif()
 
-set_target_properties(gnuradio-fcdproplus PROPERTIES DEFINE_SYMBOL "gnuradio_fcdproplus_EXPORTS")
 
 target_link_libraries(gnuradio-fcdproplus ${fcdproplus_libs} ${Boost_LIBRARIES}
   ${GNURADIO_RUNTIME_LIBRARIES} ${GNURADIO_BLOCKS_LIBRARIES}
@@ -71,47 +71,7 @@ target_link_libraries(gnuradio-fcdproplus ${GNURADIO_PMT_LIBRARIES})
 if(APPLE)
   SET_TARGET_PROPERTIES(gnuradio-fcdproplus PROPERTIES
       INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/${GR_LIBRARY_DIR}")
-  set_target_properties(gnuradio-fcdproplus PROPERTIES SOVERSION 0)
-  set_target_properties(gnuradio-fcdproplus PROPERTIES VERSION 0.0.0)
-  
-else(APPLE)
- set_target_properties(gnuradio-fcdproplus PROPERTIES SOVERSION ${LIBVER})
- set_target_properties(gnuradio-fcdproplus PROPERTIES VERSION 0.0.0 )
 endif(APPLE)
 
-
-#MESSAGE(STATUS "Audio LIBS: ${GNURADIO_AUDIO_LIBRARIES}")
-
-########################################################################
-# Install built library files
-########################################################################
-
-install(TARGETS gnuradio-fcdproplus
-    LIBRARY DESTINATION lib${LIB_SUFFIX} # .so/.dylib file
-    ARCHIVE DESTINATION lib${LIB_SUFFIX} # .lib file
-    RUNTIME DESTINATION bin              # .dll file
-)
-
-########################################################################
-# Build and register unit test
-########################################################################
-#include(GrTest)
-#
-#include_directories(${CPPUNIT_INCLUDE_DIRS})
-#
-#list(APPEND test_fcdproplus_sources
-#    ${CMAKE_CURRENT_SOURCE_DIR}/test_fcdproplus.cc
-#    ${CMAKE_CURRENT_SOURCE_DIR}/qa_fcdproplus.cc
-#)
-#
-#add_executable(test-fcdproplus ${test_fcdproplus_sources})
-#
-#target_link_libraries(
-#  test-fcdproplus
-#  ${GNURADIO_CORE_LIBRARIES}
-#  ${Boost_LIBRARIES}
-#  ${CPPUNIT_LIBRARIES}
-#  gnuradio-fcdproplus
-#)
-#
-#GR_ADD_TEST(test_fcdproplus test-fcdproplus)
+set_target_properties(gnuradio-fcdproplus PROPERTIES DEFINE_SYMBOL "gnuradio_fcdproplus_EXPORTS")
+GR_LIBRARY_FOO(gnuradio-fcdproplus)
