@@ -72,7 +72,7 @@ endif()
 # Find gnuradio build dependencies
 ########################################################################
 set(GR_REQUIRED_COMPONENTS RUNTIME PMT BLOCKS AUDIO)
-find_package(Gnuradio "3.8" REQUIRED PATHS ${CMAKE_INSTALL_PREFIX} NO_DEFAULT_PATH)
+find_package(Gnuradio "3.7" REQUIRED PATHS ${CMAKE_INSTALL_PREFIX} NO_DEFAULT_PATH)
 if(NOT GNURADIO_RUNTIME_FOUND)
     message(FATAL_ERROR "GnuRadio Core required to compile fcdproplus")
 endif()
