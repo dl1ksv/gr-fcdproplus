@@ -39,6 +39,20 @@ if(NOT CMAKE_BUILD_TYPE)
 endif(NOT CMAKE_BUILD_TYPE)
 set(CMAKE_BUILD_TYPE ${CMAKE_BUILD_TYPE} CACHE STRING "")
 
+########################################################################
+#
+# set search path for cmake modules to OOT, Gnuradio
+#
+########################################################################
+set( CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/Modules")
+include(FindGnuradioModules)
+
+if(${GNURADIO_MODULE_DIRECTORY} STREQUAL "GNURADIO_MODULE_DIRECTORY-NOTFOUND")
+	message(FATAL_ERROR "Cannot find gnuradio cmake Modules directory")
+else()
+	message(STATUS "Modules found in ${GNURADIO_MODULE_DIRECTORY}")
+endif()	
+list(APPEND CMAKE_MODULE_PATH "${GNURADIO_MODULE_DIRECTORY}" )
 
 ########################################################################
 # Compiler specific setup
@@ -72,25 +86,11 @@ endif()
 # Find gnuradio build dependencies
 ########################################################################
 set(GR_REQUIRED_COMPONENTS RUNTIME PMT BLOCKS AUDIO)
-find_package(Gnuradio "3.7" REQUIRED PATHS ${CMAKE_INSTALL_PREFIX} NO_DEFAULT_PATH)
+find_package(Gnuradio "3.7" REQUIRED PATHS ${CMAKE_INSTALL_PREFIX} ${GNURADIO_MODULE_DIRECTORY})
 if(NOT GNURADIO_RUNTIME_FOUND)
     message(FATAL_ERROR "GnuRadio Core required to compile fcdproplus")
 endif()
 FIND_LIBRARY(HIDAPI_LIBRARY hidapi-libusb)
-########################################################################
-#
-# set search path for cmake modules to OOT, Gnuradio
-#
-########################################################################
-set( CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/Modules")
-include(FindGnuradioModules)
-
-if(${GNURADIO_MODULE_DIRECTORY} STREQUAL "GNURADIO_MODULE_DIRECTORY-NOTFOUND")
-	message(FATAL_ERROR "Cannot find gnuradio cmake Modules directory")
-else()
-	message(STATUS "Modules found in ${GNURADIO_MODULE_DIRECTORY}")
-endif()	
-list(APPEND CMAKE_MODULE_PATH "${GNURADIO_MODULE_DIRECTORY}" )
 
 # Set the version information here
 set(VERSION_INFO_MAJOR_VERSION 3)
