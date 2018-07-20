@@ -1,0 +1,85 @@
+id: fcdproplus_fcdproplus
+label: Funcube dongle Pro+ source
+category: '[Custom]'
+flags: throttle
+
+parameters: 
+-   id: devicename
+    label: Device Name
+    dtype: string
+    default: @DEVICE_STRING@
+-   id: unit
+    label: Unit 
+    dtype: int
+    default: '1'
+-   id: lnaswitch
+    label: Lna enable,disable
+    dtype: int
+    default: '1'
+-   id: mixergainswitch
+    label: Mixergain enable/disable
+    dtype: int
+    default: '1'
+-   id: freq
+    label: Frequency (Unit Hz)
+    dtype: real
+    default: '137500000'
+-   id: ppm
+    label: Frequency corr. (ppm)
+    dtype: int
+    default: '0'
+-   id: if_gain
+    label: If gain
+    dtype: int
+    default: '1'
+
+inputs:
+-   domain: message
+    id: freq
+    optional: true
+
+outputs:
+-   label: out
+    dtype: complex
+
+templates:  
+    imports: 
+        import fcdproplus
+    make: |-
+        fcdproplus.fcdproplus(${devicename},${unit})
+        self.${id}.set_lna(${lnaswitch})
+        self.${id}.set_mixer_gain(${mixergainswitch})
+        self.${id}.set_if_gain(${if_gain})
+        self.${id}.set_freq_corr(${ppm})
+        self.${id}.set_freq(${freq})
+
+    callbacks:
+    - set_freq(${freq})
+    - set_lna(${lnaswitch})
+    - set_mixer_gain(${mixergainswitch})
+    - set_freq_corr(${ppm})
+    - set_if_gain(${if_gain})
+
+
+documentation:
+
+    This block wraps the Funcube Dongle Pro+ USB alsa audio input and the USB control interface \
+    into one convenient GNU Radio source block.
+
+    The sample rate is fixed at 192 ksps.
+
+    The sound device is taken from the device_name. This should be the alsa device name, like \
+    hw:1 or plughw:1,0.
+    If the device name is empty or invalid the device will beautodetected\
+    by looking into /proc/asound/cards .
+    The frequency is expressed in Unit Hz, that means\
+    Unit = 1 Hz, Unit = 1000 Khz
+
+    The LNA can be switched on and off.
+
+    The mixer gain can be switched on and off.
+
+    The if gain can be set between 0 and 59 ( integer values) .
+
+file_format: 1
+

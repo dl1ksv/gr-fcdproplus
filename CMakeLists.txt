@@ -85,8 +85,8 @@ endif()
 ########################################################################
 # Find gnuradio build dependencies
 ########################################################################
-set(GR_REQUIRED_COMPONENTS RUNTIME PMT BLOCKS AUDIO)
-find_package(Gnuradio "3.7" REQUIRED PATHS ${CMAKE_INSTALL_PREFIX} ${GNURADIO_MODULE_DIRECTORY})
+set(GR_REQUIRED_COMPONENTS RUNTIME BLOCKS AUDIO)
+find_package(Gnuradio "3.8" REQUIRED PATHS ${CMAKE_INSTALL_PREFIX} ${GNURADIO_MODULE_DIRECTORY})
 if(NOT GNURADIO_RUNTIME_FOUND)
     message(FATAL_ERROR "GnuRadio Core required to compile fcdproplus")
 endif()
@@ -94,8 +94,8 @@ FIND_LIBRARY(HIDAPI_LIBRARY hidapi-libusb)
 
 # Set the version information here
 set(VERSION_INFO_MAJOR_VERSION 3)
-set(VERSION_INFO_API_COMPAT    7)
-set(VERSION_INFO_MINOR_VERSION 2)
+set(VERSION_INFO_API_COMPAT    8)
+set(VERSION_INFO_MINOR_VERSION 0)
 set(VERSION_INFO_MAINT_VERSION 0)
 include(GrVersion) #setup version info
 ########################################################################
@@ -113,7 +113,8 @@ set(GR_CONF_DIR         etc)
 set(GR_PKG_CONF_DIR     ${GR_CONF_DIR}/${CMAKE_PROJECT_NAME}/conf.d)
 set(GR_LIBEXEC_DIR      libexec)
 set(GR_PKG_LIBEXEC_DIR  ${GR_LIBEXEC_DIR}/${CMAKE_PROJECT_NAME})
-set(GRC_BLOCKS_DIR      ${GR_PKG_DATA_DIR}/grc/blocks)
+#set(GRC_BLOCKS_DIR      ${GR_PKG_DATA_DIR}/grc/blocks)
+set(GRC_BLOCKS_DIR      /home/schroer/.grc_gnuradio )
 
 
 if( ${CMAKE_SYSTEM_NAME} MATCHES "Linux")
@@ -123,7 +124,7 @@ if( ${CMAKE_SYSTEM_NAME} MATCHES "Linux")
         message(FATAL_ERROR "libusb required to compile fcdproplus")
     endif()
 endif()
-find_package(PythonLibs 2)
+find_package(PythonLibs 3)
 find_package(SWIG)
 
 if(NOT SWIG_FOUND)
@@ -200,12 +201,13 @@ install(
 # Print Summary
 ########################################################################
 MESSAGE(STATUS "================ Build Summary =========================")
-MESSAGE(STATUS "Building gr-fcdproplus : ${LIBVER} for ${CMAKE_SYSTEM_NAME} ")
-MESSAGE(STATUS "Building for gnuradio  : ${Gnuradio_VERSION}")
-MESSAGE(STATUS "Using CMAKE Module path: ${CMAKE_MODULE_PATH}" )
-MESSAGE(STATUS "GNURADIO INCLUDES IN   : ${GNURADIO_RUNTIME_INCLUDE_DIRS}")
-MESSAGE(STATUS "Using install prefix   : ${CMAKE_INSTALL_PREFIX}")
-MESSAGE(STATUS "GNURADIO LIBS          : ${GNURADIO_AUDIO_LIBRARIES}")
+MESSAGE(STATUS "Building gr-fcdproplus  : ${LIBVER} for ${CMAKE_SYSTEM_NAME} ")
+MESSAGE(STATUS "Building for gnuradio   : ${Gnuradio_VERSION}")
+MESSAGE(STATUS "Using CMAKE Module path : ${CMAKE_MODULE_PATH}" )
+MESSAGE(STATUS "GNURADIO INCLUDES IN    : ${GNURADIO_RUNTIME_INCLUDE_DIRS}")
+MESSAGE(STATUS "Using install prefix    : ${CMAKE_INSTALL_PREFIX}")
+MESSAGE(STATUS "GNURADIO LIBS           : ${GNURADIO_AUDIO_LIBRARIES}")
+MESSAGE(STATUS "Installing grc files to : ${GRC_BLOCKS_DIR}")
 if(HIDAPI_LIBRARY)
 	  MESSAGE(STATUS "System Hidapi Lib ${HIDAPI_LIBRARY} is used")
 else()	  
