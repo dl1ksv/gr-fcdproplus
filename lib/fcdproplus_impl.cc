@@ -24,6 +24,7 @@
 
 #include <gnuradio/io_signature.h>
 #include <gnuradio/blocks/float_to_complex.h>
+#include <gnuradio/logger.h>
 
 #include "fcdproplus_impl.h"
 #include "fcdcmd.h"
@@ -144,9 +145,44 @@ namespace gr {
         for(int i=2;i<15;i++)
            std::cerr << aucBuf[i];
         std::cerr << std::endl;
-
+//      message_port_register_hier_out(pmt::mp("freq"));
+      std::cerr << "Register port: freq" << std::endl;
+      message_port_register_in(pmt::mp("freq"));
+      std::cerr << "Set msg handler" << std::endl;
+      set_msg_handler(pmt::mp("freq"), boost::bind(&fcdproplus_impl::set_frequency_msg, this, _1));
+      std::cerr << "Initialisation finished" << std:: endl;
     }
-
+    void
+    fcdproplus_impl::set_frequency_msg(pmt::pmt_t msg)
+    {
+      // Accepts either a number that is assumed to be the new
+      // frequency or a key:value pair message where the key must be
+      // "freq" and the value is the new frequency.
+GR_LOG_GETLOGGER(LOG,  "my_logger_name");
+      if(pmt::is_number(msg)) {
+        set_freq(pmt::to_float(msg));
+      }
+      else if(pmt::is_pair(msg)) {
+        pmt::pmt_t key = pmt::car(msg);
+        pmt::pmt_t val = pmt::cdr(msg);
+        if(pmt::eq(key, pmt::intern("freq"))) {
+          if(pmt::is_number(val)) {
+              set_freq(pmt::to_float(val));
+          }
+        }
+        else { //d_logger->logger ?
+          //GR_LOG_WARN(std::cerr, boost::format("Set Frequency Message must have "
+          //                                    "the key = 'freq'; got '%1%'.") \
+          //            % pmt::write_string(key));
+          std::cerr << "Error 1" << std::endl;
+        }
+      }
+      else {
+        GR_LOG_WARN(LOG, "Set Frequency Message must be either a number or a "
+                    "key:value pair where the key is 'freq'.");
+         std::cerr << "Error 2" << std::endl;
+      }
+    }
     /*
      * Our virtual destructor.
      */

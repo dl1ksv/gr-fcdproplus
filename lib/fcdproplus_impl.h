@@ -54,6 +54,7 @@ namespace gr {
       void set_mixer_gain(int gain);
       void set_freq_corr(int ppm);
       void set_if_gain(int gain);
+      void set_frequency_msg(pmt::pmt_t msg);
 
     };
 
