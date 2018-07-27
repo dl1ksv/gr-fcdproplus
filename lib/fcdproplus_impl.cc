@@ -145,7 +145,7 @@ namespace gr {
         for(int i=2;i<15;i++)
            std::cerr << aucBuf[i];
         std::cerr << std::endl;
-//      message_port_register_hier_out(pmt::mp("freq"));
+      message_port_register_hier_in(pmt::mp("freq"));
       std::cerr << "Register port: freq" << std::endl;
       message_port_register_in(pmt::mp("freq"));
       std::cerr << "Set msg handler" << std::endl;
