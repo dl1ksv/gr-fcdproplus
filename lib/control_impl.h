@@ -1,6 +1,6 @@
 /* -*- c++ -*- */
 /* 
- * Copyright 2013 Volker Schroer, DL1KSV.
+ * Copyright 2018 Volker Schroer, DL1KSV
  * 
  * This is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,42 +18,44 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifndef INCLUDED_FCDPROPLUS_FCDPROPLUS_IMPL_H
-#define INCLUDED_FCDPROPLUS_FCDPROPLUS_IMPL_H
+#ifndef INCLUDED_FCDPROPLUS_CONTROL_IMPL_H
+#define INCLUDED_FCDPROPLUS_CONTROL_IMPL_H
 
-#include <fcdproplus/fcdproplus.h>
+
 #include <fcdproplus/control.h>
-#include <gnuradio/audio/source.h>
-#include <gnuradio/logger.h>
-#include <gnuradio/prefs.h>
 
+
+#ifdef SYSTEM_HIDAPI
+#include <hidapi/hidapi.h>
+#else
+#include "hidapi.h"
+#endif
 
 namespace gr {
   namespace fcdproplus {
 
-    class fcdproplus_impl : public fcdproplus
+    class fcdpp_control_impl : public fcdpp_control
     {
     private:
-      gr::audio::source::sptr fcd;              /*!< The audio input source */
-      fcdpp_control::sptr fcd_control;                /*!< The fcd control block */
-      unsigned int d_freq_req;                  /*!< The latest requested frequency in Khz */
-      int d_corr;
-      int d_unit;
-      gr::logger_ptr d_logger;
+
+      hid_device *d_control_handle;             /*!< handle to control the device, set frequency, etc */
+      unsigned char aucBuf[65];                 /*!< Buffers to read/write control messages to the dongle */
+
     public:
-      fcdproplus_impl(const std::string user_device_name,int unit);
-      ~fcdproplus_impl();
-      /* Public API functions documented in include/fcdproplus.h */
+      fcdpp_control_impl();
+      ~fcdpp_control_impl();
+      /* Public API functions documented in include/control.h */
       void set_freq(float freq);
       void set_lna(int gain);
       void set_mixer_gain(int gain);
-      void set_freq_corr(int ppm);
       void set_if_gain(int gain);
+      void set_frequency_msg(pmt::pmt_t msg);
+
 
     };
 
   } // namespace fcdproplus
 } // namespace gr
 
-#endif /* INCLUDED_FCDPROPLUS_FCDPROPLUS_IMPL_H */
+#endif /* INCLUDED_FCDPROPLUS_CONTROL_H */
 

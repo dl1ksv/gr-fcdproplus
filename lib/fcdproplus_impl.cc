@@ -1,6 +1,6 @@
 /* -*- c++ -*- */
 /* 
- * Copyright 2013 <+YOU OR YOUR COMPANY+>.
+ * Copyright 2013, 2018 Volker Schroer, DL1KSV
  * 
  * This is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,20 +24,16 @@
 
 #include <gnuradio/io_signature.h>
 #include <gnuradio/blocks/float_to_complex.h>
-#include <gnuradio/logger.h>
 
 #include "fcdproplus_impl.h"
-#include "fcdcmd.h"
+
 
 #include <iostream>
 #include <fstream>
 #include <exception>
 
 
-#define FCDPROPLUS_VENDOR_ID    0x04d8
-#define FCDPROPLUS_PRODUCT_ID   0xfb31
 
-#define TIMEOUT 5000
 using namespace std;
 namespace gr {
   namespace fcdproplus {
@@ -56,13 +52,40 @@ namespace gr {
                     gr::io_signature::make(0, 0, 0),
                     gr::io_signature::make(1, 1, sizeof (gr_complex)))
     {
+
+      prefs *p = prefs::singleton();
+      std::string config_file = p->get_string("LOG", "log_config", "");
+      std::string log_level = p->get_string("LOG", "log_level", "off");
+      std::string log_file = p->get_string("LOG", "log_file", "");
+
+      GR_CONFIG_LOGGER(config_file);
+
+      GR_LOG_GETLOGGER(LOG, "gr_log." + alias());
+      GR_LOG_SET_LEVEL(LOG, log_level);
+      if(log_file.size() > 0) {
+        if(log_file == "stdout") {
+          GR_LOG_SET_CONSOLE_APPENDER(LOG, "cout","gr::log :%p: %c{1} - %m%n");
+        }
+        else if(log_file == "stderr") {
+          GR_LOG_SET_CONSOLE_APPENDER(LOG, "cerr","gr::log :%p: %c{1} - %m%n");
+        }
+        else {
+          GR_LOG_SET_FILE_APPENDER(LOG, log_file , true,"%r :%p: %c{1} - %m%n");
+        }
+      }
+
+      d_logger = LOG;
+
+
         std::string device_name;
         bool success;
         gr::blocks::float_to_complex::sptr f2c;
+
         success = false;
         d_freq_req=0;
         d_corr=0;
         d_unit=unit;
+
         if(!user_device_name.empty())  {
             try {
                  /* Audio source; sample rate fixed at 192kHz */
@@ -71,6 +94,7 @@ namespace gr {
             }
             catch (std::exception ) {
                 std::cerr << "Could not open device: " <<user_device_name << std::endl;
+                GR_LOG_INFO(d_logger,boost::format("Could not open device: %1%") % user_device_name);
                 success=false;
             }
 
@@ -92,7 +116,7 @@ namespace gr {
                         std::istringstream( line ) >> id;
 
                         std::ostringstream hw_id;
-                        hw_id << "plughw:" << id<<",0"; // build alsa identifier
+                        hw_id << "hw:" << id<<",0"; // build alsa identifier
                         device_name= hw_id.str();
 
                     }
@@ -109,10 +133,10 @@ namespace gr {
             fcd = gr::audio::source::make(192000, device_name, true);
         }
         if(success) {
-          std::cerr <<"Opened: " << device_name << std::endl;
+          GR_LOG_INFO(d_logger,boost::format("Audio device %1% opened") % device_name);
         }
         else  {
-            std::cerr <<"Funcube Dongle Pro+ found as: " << device_name << std::endl;
+            GR_LOG_INFO(d_logger,boost::format("Funcube Dongle Pro+ found as: %1%") % device_name);
         }
 
 
@@ -122,172 +146,46 @@ namespace gr {
         connect(fcd, 0, f2c, 0);
         connect(fcd, 1, f2c, 1);
         connect(f2c, 0, self(), 0);
-        /* setup the control part */
-        d_control_handle =NULL;
-        hid_init();
-        d_control_handle = hid_open ( FCDPROPLUS_VENDOR_ID ,FCDPROPLUS_PRODUCT_ID,NULL );
-        if(d_control_handle == NULL ) {
-            throw std::runtime_error("FunCube Dongle  V2.0 soundcard found but not controlpart.");
-        }
-        else {
-            std::cerr <<"Dongle sucessfully initialized" << std::endl;
-        }
 
-        /*
-         * Check mode, so
-         * Send a BL Query Command
-         */
-        aucBuf[0] = 0; // Report ID. Ignored by HID Class firmware as only config'd for one report
-        aucBuf[1] = FCD_HID_CMD_QUERY;
-        hid_write(d_control_handle,aucBuf,65);
-        hid_read(d_control_handle,aucBuf,65);
-        std::cerr <<"Result of Action :+++++" << std::endl;
-        for(int i=2;i<15;i++)
-           std::cerr << aucBuf[i];
-        std::cerr << std::endl;
+        fcd_control = fcdpp_control::make();
+
       message_port_register_hier_in(pmt::mp("freq"));
-      std::cerr << "Register port: freq" << std::endl;
-      message_port_register_in(pmt::mp("freq"));
-      std::cerr << "Set msg handler" << std::endl;
-      set_msg_handler(pmt::mp("freq"), boost::bind(&fcdproplus_impl::set_frequency_msg, this, _1));
-      std::cerr << "Initialisation finished" << std:: endl;
-    }
-    void
-    fcdproplus_impl::set_frequency_msg(pmt::pmt_t msg)
-    {
-      // Accepts either a number that is assumed to be the new
-      // frequency or a key:value pair message where the key must be
-      // "freq" and the value is the new frequency.
-GR_LOG_GETLOGGER(LOG,  "my_logger_name");
-      if(pmt::is_number(msg)) {
-        set_freq(pmt::to_float(msg));
-      }
-      else if(pmt::is_pair(msg)) {
-        pmt::pmt_t key = pmt::car(msg);
-        pmt::pmt_t val = pmt::cdr(msg);
-        if(pmt::eq(key, pmt::intern("freq"))) {
-          if(pmt::is_number(val)) {
-              set_freq(pmt::to_float(val));
-          }
-        }
-        else { //d_logger->logger ?
-          //GR_LOG_WARN(std::cerr, boost::format("Set Frequency Message must have "
-          //                                    "the key = 'freq'; got '%1%'.") \
-          //            % pmt::write_string(key));
-          std::cerr << "Error 1" << std::endl;
-        }
-      }
-      else {
-        GR_LOG_WARN(LOG, "Set Frequency Message must be either a number or a "
-                    "key:value pair where the key is 'freq'.");
-         std::cerr << "Error 2" << std::endl;
-      }
+      msg_connect(self(),pmt::mp("freq"),fcd_control,pmt::mp("freq"));
     }
     /*
      * Our virtual destructor.
      */
     fcdproplus_impl::~fcdproplus_impl()
     {
-        if(d_control_handle !=0)   {
-            hid_close(d_control_handle);
-        }
-        hid_exit();
 
     }
 
     void
     fcdproplus_impl::set_freq(float freq)
     {
-        unsigned int nfreq;
+        float setfreq;
         if(d_freq_req == (int) freq)
             return; // Frequency did not change
         d_freq_req=(int) freq;
         if(d_corr == 0) {
-            nfreq=((int) freq)*d_unit;
+            setfreq= freq*d_unit;
         }
         else {
-            nfreq=(int)(((float)d_unit+((float) d_corr)/(1000000./d_unit))*freq);
+            setfreq=((float)d_unit+((float) d_corr)/(1000000./d_unit))*freq;
         }
-        aucBuf[0]=0;
-        aucBuf[1]=FCD_HID_CMD_SET_FREQUENCY_HZ;
-        aucBuf[2] = (unsigned char)nfreq;
-        aucBuf[3] = (unsigned char)(nfreq>>8);
-        aucBuf[4] = (unsigned char)(nfreq>>16);
-        aucBuf[5] = (unsigned char)(nfreq>>24);
-        hid_write(d_control_handle, aucBuf, 65);
-        aucBuf[1]=0;
-        hid_read(d_control_handle, aucBuf, 65);
-        if (aucBuf[0]==FCD_HID_CMD_SET_FREQUENCY_HZ && aucBuf[1]==1) {
-            nfreq = 0;
-            nfreq = (unsigned int) aucBuf[2];
-            nfreq += (unsigned int) (aucBuf[3] << 8);
-            nfreq += (unsigned int) (aucBuf[4] << 16);
-            nfreq += (unsigned int) (aucBuf[5] << 24);
-            if(d_unit == 1000) {
-                std::cerr <<"Set Frequency to: "<<freq/1000 <<" KHz, corrected to: " <<nfreq/1000 << " Khz"<<std::endl;
-            }
-            else {
-                std::cerr <<"Set Frequency to: "<<freq <<" Hz, corrected to: " <<nfreq << " Hz"<<std::endl;
-            }
-
-        }
-        else {
-            std::cerr <<"Set Frequency failed: " <<freq << " Khz"<<std::endl;
-        }
+        fcd_control->set_freq(setfreq);
     }
 
     void
     fcdproplus_impl::set_lna(int gain)
     {
-        aucBuf[0] = 0; // Report ID. Ignored by HID Class firmware as only config'd for one report
-        aucBuf[1] = FCD_HID_CMD_SET_LNA_GAIN;
-        if(gain !=0 ) {
-            aucBuf[2] = 1;
-        }
-        else {
-            aucBuf[2]=0;
-        }
-        hid_write(d_control_handle, aucBuf, 65);
-        hid_read(d_control_handle, aucBuf, 65);
-        if(aucBuf[0] == FCD_HID_CMD_SET_LNA_GAIN) {
-            if (gain != 0) {
-                std::cerr <<" Lna gain enabled" << std::endl;
-            }
-             else {
-                std::cerr <<" Lna gain disabled" << std::endl;
-            }
-        }
-        else {
-            std::cerr <<"Failed to modify lna gain" <<std::endl;
-            std::cerr <<"Result: "<< aucBuf[0]<< " , " << aucBuf[1] <<std::endl;
-        }
+      fcd_control->set_lna(gain);
     }
 
     void
     fcdproplus_impl::set_mixer_gain(int gain)
     {
-        aucBuf[0] = 0; // Report ID. Ignored by HID Class firmware as only config'd for one report
-        aucBuf[1] = FCD_HID_CMD_SET_MIXER_GAIN;
-        if(gain !=0 ) {
-            aucBuf[2] = 1;
-        }
-        else {
-            aucBuf[2]=0;
-        }
-        hid_write(d_control_handle, aucBuf, 65);
-        hid_read(d_control_handle, aucBuf, 65);
-        if(aucBuf[0] == FCD_HID_CMD_SET_MIXER_GAIN) {
-            if (gain != 0) {
-                std::cerr <<" Mixer gain enabled" << std::endl;
-            }
-             else {
-                std::cerr <<" Mixer gain disabled" << std::endl;
-            }
-        }
-        else {
-            std::cerr <<"Failed to modify mixer gain" <<std::endl;
-            std::cerr <<"Result: "<< aucBuf[0]<< " , " << aucBuf[1] <<std::endl;
-        }
+      fcd_control->set_mixer_gain(gain);
     }
 
     void
@@ -297,8 +195,7 @@ GR_LOG_GETLOGGER(LOG,  "my_logger_name");
         if(d_corr == ppm)
             return;
         d_corr=ppm;
-        std::cerr <<"Set frequency correction to: "<< ppm <<std::endl;
-        //Reset Frequency setting
+        GR_LOG_INFO(d_logger,boost::format("Set frequency correction to: %1% ppm ") % ppm );
         freq=d_freq_req;
         d_freq_req=0;
         set_freq(freq);
@@ -308,20 +205,10 @@ GR_LOG_GETLOGGER(LOG,  "my_logger_name");
     fcdproplus_impl::set_if_gain(int gain)
     {
         if( (gain < 0) || gain > 59) {
-            std::cerr <<"Invalid If gain value: "<< gain <<std::endl;
+            GR_LOG_WARN(d_logger,boost::format("Invalid If gain value: %1%") % gain );
             return;
         }
-        aucBuf[0] = 0; // Report ID. Ignored by HID Class firmware as only config'd for one report
-        aucBuf[1] = FCD_HID_CMD_SET_IF_GAIN;
-        aucBuf[2] = (unsigned char) gain;
-        hid_write(d_control_handle, aucBuf, 65);
-        hid_read(d_control_handle, aucBuf, 65);
-        if(aucBuf[0] == FCD_HID_CMD_SET_IF_GAIN) {
-            std::cerr <<"If gain set to: "<< gain <<std::endl;
-        }
-        else {
-            std::cerr << "Could not set If gain" <<std::endl;
-        }
+        fcd_control->set_if_gain(gain);
 
     }
 

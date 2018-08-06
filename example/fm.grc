@@ -164,15 +164,23 @@ blocks:
     coordinate: [1110, 406]
     rotation: 0
     state: enabled
+- name: blocks_message_debug_0
+  id: blocks_message_debug
+  parameters: {}
+  states:
+    coordinate: [976, 176.0]
+    rotation: 0
+    state: enabled
 - name: fcdproplus_fcdproplus_0
   id: fcdproplus_fcdproplus
   parameters:
+    devicename: hw:2,0
     freq: RxFrequency
     if_gain: Ifgain
-    lnaswitch: Lna
+    lnaswitch: '1'
     maxoutbuf: '0'
     minoutbuf: '0'
-    mixergainswitch: Mixergain
+    mixergainswitch: '1'
     ppm: ' PPM'
     unit: '1000'
   states:
@@ -190,21 +198,91 @@ blocks:
     maxoutbuf: '0'
     minoutbuf: '0'
     samp_rate: samp_rate
-    type: interp_fir_filter_ccf
+    type: fir_filter_ccf
     width: '300'
     win: firdes.WIN_HAMMING
   states:
     coordinate: [116, 349]
     rotation: 0
     state: enabled
+- name: qtgui_freq_sink_x_0
+  id: qtgui_freq_sink_x
+  parameters:
+    alpha1: '1.0'
+    alpha10: '1.0'
+    alpha2: '1.0'
+    alpha3: '1.0'
+    alpha4: '1.0'
+    alpha5: '1.0'
+    alpha6: '1.0'
+    alpha7: '1.0'
+    alpha8: '1.0'
+    alpha9: '1.0'
+    autoscale: 'False'
+    average: '1.0'
+    axislabels: 'True'
+    bw: samp_rate
+    color1: '"blue"'
+    color10: '"dark blue"'
+    color2: '"red"'
+    color3: '"green"'
+    color4: '"black"'
+    color5: '"cyan"'
+    color6: '"magenta"'
+    color7: '"yellow"'
+    color8: '"dark red"'
+    color9: '"dark green"'
+    ctrlpanel: 'False'
+    fc: '0'
+    fftsize: '1024'
+    freqhalf: 'True'
+    grid: 'False'
+    gui_hint: 1,0,1,7
+    label: Relative Gain
+    label10: ''''''
+    label2: ''''''
+    label3: ''''''
+    label4: ''''''
+    label5: ''''''
+    label6: ''''''
+    label7: ''''''
+    label8: ''''''
+    label9: ''''''
+    legend: 'True'
+    name: '""'
+    nconnections: '1'
+    showports: 'True'
+    tr_chan: '0'
+    tr_level: '0.0'
+    tr_mode: qtgui.TRIG_MODE_FREE
+    tr_tag: '""'
+    type: complex
+    units: dB
+    update_time: '0.10'
+    width1: '1'
+    width10: '1'
+    width2: '1'
+    width3: '1'
+    width4: '1'
+    width5: '1'
+    width6: '1'
+    width7: '1'
+    width8: '1'
+    width9: '1'
+    wintype: firdes.WIN_BLACKMAN_hARRIS
+    ymax: '10'
+    ymin: '-140'
+  states:
+    coordinate: [664, 276.0]
+    rotation: 0
+    state: disabled
 - name: qtgui_sink_x_0
   id: qtgui_sink_x
   parameters:
     bw: samp_rate
-    fc: RxFrequency
+    fc: RxFrequency*1000
     fftsize: '1024'
-    freqchangevar: RxFrequency
-    gui_hint: 1,0,1,4
+    gui_hint: 1,0,1,7
     maxoutbuf: '0'
     minoutbuf: '0'
     name: QT GUI Plot
@@ -218,7 +296,7 @@ blocks:
     type: complex
     wintype: firdes.WIN_BLACKMAN_hARRIS
   states:
-    coordinate: [616, 180.0]
+    coordinate: [648, 140.0]
     rotation: 0
     state: enabled
 
@@ -226,8 +304,12 @@ connections:
 - [analog_fm_demod_cf_0, '0', audio_sink_0, '0']
 - [analog_fm_demod_cf_0, '0', audio_sink_0, '1']
 - [fcdproplus_fcdproplus_0, '0', low_pass_filter_0, '0']
+- [fcdproplus_fcdproplus_0, '0', qtgui_freq_sink_x_0, '0']
 - [fcdproplus_fcdproplus_0, '0', qtgui_sink_x_0, '0']
 - [low_pass_filter_0, '0', analog_fm_demod_cf_0, '0']
+- [qtgui_sink_x_0, freq, blocks_message_debug_0, print]
+- [qtgui_sink_x_0, freq, fcdproplus_fcdproplus_0, freq]
+- [qtgui_sink_x_0, freq, qtgui_sink_x_0, freq]
 
 metadata:
   file_format: 1

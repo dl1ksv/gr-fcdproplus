@@ -1,0 +1,60 @@
+id: fcdproplus_control
+label: Funcube dongle Pro+ Control
+category: '[Custom]'
+flags: throttle
+
+parameters: 
+-   id: lnaswitch
+    label: Lna enable,disable
+    dtype: int
+    default: '1'
+-   id: mixergainswitch
+    label: Mixergain enable/disable
+    dtype: int
+    default: '1'
+-   id: freq
+    label: Frequency (Unit Hz)
+    dtype: real
+    default: '137500000'
+-   id: if_gain
+    label: If gain
+    dtype: int
+    default: '1'
+
+inputs:
+-   domain: message
+    id: freq
+    optional: true
+
+templates:  
+    imports: 
+        import fcdproplus
+    make: |-
+        fcdproplus.fcdpp_control()
+        self.${id}.set_lna(${lnaswitch})
+        self.${id}.set_mixer_gain(${mixergainswitch})
+        self.${id}.set_if_gain(${if_gain})
+        self.${id}.set_freq(${freq})
+
+    callbacks:
+    - set_freq(${freq})
+    - set_lna(${lnaswitch})
+    - set_mixer_gain(${mixergainswitch})
+    - set_if_gain(${if_gain})
+
+
+documentation:
+
+    This block wraps the Funcube Dongle Pro+ USB  USB control interface \
+    into one convenient GNU Radio source block.
+
+    The frequency is expressed in Unit Hz
+
+    The LNA can be switched on and off.
+
+    The mixer gain can be switched on and off.
+
+    The if gain can be set between 0 and 59 ( integer values) .
+
+file_format: 1
+

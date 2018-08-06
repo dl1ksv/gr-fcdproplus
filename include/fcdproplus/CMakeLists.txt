@@ -22,5 +22,7 @@
 ########################################################################
 install(FILES
     api.h
-    fcdproplus.h DESTINATION include/fcdproplus
+    fcdproplus.h
+    control.h
+    DESTINATION include/fcdproplus
 )
