@@ -41,15 +41,15 @@ Funcube Dongle Pro+ source
 Don't forget the udev rules:
 For instance:
 
-# Udev rules for the Funcube Dongle Pro (0xfb56) and Pro+ (0xfb31)
+  # Udev rules for the Funcube Dongle Pro (0xfb56) and Pro+ (0xfb31)
 
-# HIDAPI/libusb:
-SUBSYSTEMS=="usb" ATTRS{idVendor}=="04d8" ATTRS{idProduct}=="fb56" MODE:="0666"
-SUBSYSTEMS=="usb" ATTRS{idVendor}=="04d8" ATTRS{idProduct}=="fb31" MODE:="0666"
+  # HIDAPI/libusb:
+  SUBSYSTEMS=="usb" ATTRS{idVendor}=="04d8" ATTRS{idProduct}=="fb56" MODE:="0666"
+  SUBSYSTEMS=="usb" ATTRS{idVendor}=="04d8" ATTRS{idProduct}=="fb31" MODE:="0666"
 
-# HIDAPI/hidraw:
-KERNEL=="hidraw*", ATTRS{busnum}=="1", ATTRS{idVendor}=="04d8", ATTRS{idProduct}=="fb56", MODE="0666"
-KERNEL=="hidraw*", ATTRS{busnum}=="1", ATTRS{idVendor}=="04d8", ATTRS{idProduct}=="fb31", MODE="0666"
+  # HIDAPI/hidraw:
+  KERNEL=="hidraw*", ATTRS{busnum}=="1", ATTRS{idVendor}=="04d8", ATTRS{idProduct}=="fb56", MODE="0666"
+  KERNEL=="hidraw*", ATTRS{busnum}=="1", ATTRS{idVendor}=="04d8", ATTRS{idProduct}=="fb31", MODE="0666"
 
 4.    Usage
 
