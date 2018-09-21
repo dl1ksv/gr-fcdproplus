@@ -1,0 +1,166 @@
+options:
+  parameters:
+    author: dl1ksv
+    category: '[GRC Hier Blocks]'
+    description: Example of an FM receiver,using the Fcdproplus Control Block
+    generate_options: qt_gui
+    hier_block_src_path: '.:'
+    id: fcdControl
+    max_nouts: '0'
+    placement: (0,0)
+    run: 'True'
+    run_command: '{python} -u {filename}'
+    run_options: prompt
+    sizing_mode: fixed
+    title: FM Receiver,
+  states:
+    coordinate: [8, 8]
+    rotation: 0
+    state: enabled
+
+blocks:
+- name: RxFrequency
+  id: variable_qtgui_range
+  parameters:
+    gui_hint: 0,0,1,1
+    label: 'Set Frequency '
+    min_len: '200'
+    orient: Qt.Horizontal
+    rangeType: float
+    start: '80000'
+    step: '100'
+    stop: '146000'
+    value: '94300'
+    widget: counter
+  states:
+    coordinate: [304, 20.0]
+    rotation: 0
+    state: enabled
+- name: samp_rate
+  id: variable
+  parameters:
+    value: '192000'
+  states:
+    coordinate: [184, 12]
+    rotation: 0
+    state: enabled
+- name: analog_fm_demod_cf_1
+  id: analog_fm_demod_cf
+  parameters:
+    audio_decim: '4'
+    audio_pass: '15000'
+    audio_stop: '16000'
+    chan_rate: samp_rate
+    deviation: '75000'
+    gain: '1'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    tau: 75e-6
+  states:
+    coordinate: [680, 336.0]
+    rotation: 0
+    state: enabled
+- name: audio_sink_1
+  id: audio_sink
+  parameters:
+    device_name: default
+    num_inputs: '2'
+    ok_to_block: 'True'
+    samp_rate: '48000'
+  states:
+    coordinate: [1392, 400.0]
+    rotation: 0
+    state: enabled
+- name: audio_source_0
+  id: audio_source
+  parameters:
+    device_name: hw:2,0
+    num_outputs: '2'
+    ok_to_block: 'True'
+    samp_rate: samp_rate
+  states:
+    coordinate: [320, 240.0]
+    rotation: 0
+    state: true
+- name: blocks_float_to_complex_0
+  id: blocks_float_to_complex
+  parameters:
+    vlen: '1'
+  states:
+    coordinate: [584, 176.0]
+    rotation: 0
+    state: true
+- name: blocks_message_debug_0
+  id: blocks_message_debug
+  parameters: {}
+  states:
+    coordinate: [1184, 176.0]
+    rotation: 0
+    state: true
+- name: fcdproplus_control_0
+  id: fcdproplus_control
+  parameters:
+    freq: RxFrequency*1000
+    if_gain: '8'
+    lnaswitch: '1'
+    mixergainswitch: '1'
+  states:
+    coordinate: [56, 156.0]
+    rotation: 0
+    state: true
+- name: low_pass_filter_1
+  id: low_pass_filter
+  parameters:
+    beta: '6.76'
+    cutoff_freq: '40000'
+    decim: '1'
+    gain: '5'
+    interp: '1'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    samp_rate: samp_rate
+    type: interp_fir_filter_ccf
+    width: '300'
+    win: firdes.WIN_HAMMING
+  states:
+    coordinate: [392, 344.0]
+    rotation: 0
+    state: enabled
+- name: qtgui_sink_x_1
+  id: qtgui_sink_x
+  parameters:
+    bw: samp_rate
+    fc: RxFrequency*1000
+    fftsize: '1024'
+    gui_hint: 1,0,1,7
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    name: QT GUI Plot
+    plotconst: 'False'
+    plotfreq: 'True'
+    plottime: 'False'
+    plotwaterfall: 'True'
+    rate: '10'
+    showports: 'False'
+    showrf: 'True'
+    type: complex
+    wintype: firdes.WIN_BLACKMAN_hARRIS
+  states:
+    coordinate: [896, 176.0]
+    rotation: 0
+    state: enabled
+
+connections:
+- [analog_fm_demod_cf_1, '0', audio_sink_1, '0']
+- [analog_fm_demod_cf_1, '0', audio_sink_1, '1']
+- [audio_source_0, '0', blocks_float_to_complex_0, '0']
+- [audio_source_0, '1', blocks_float_to_complex_0, '1']
+- [blocks_float_to_complex_0, '0', low_pass_filter_1, '0']
+- [blocks_float_to_complex_0, '0', qtgui_sink_x_1, '0']
+- [low_pass_filter_1, '0', analog_fm_demod_cf_1, '0']
+- [qtgui_sink_x_1, freq, blocks_message_debug_0, print]
+- [qtgui_sink_x_1, freq, fcdproplus_control_0, freq]
+- [qtgui_sink_x_1, freq, qtgui_sink_x_1, freq]
+
+metadata:
+  file_format: 1

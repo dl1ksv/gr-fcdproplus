@@ -4,4 +4,4 @@ Makefile
 moc_*
 qrc_*
 ui_*
-example/FMRadio.py
+example/*.py

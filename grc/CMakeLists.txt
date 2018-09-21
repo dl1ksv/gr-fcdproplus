@@ -20,12 +20,18 @@
 if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
   set(DEVICE_STRING "FUNcube Dongle V2.0")
 else()
-  set(DEVICE_STRING "")
+  set(DEVICE_STRING "''")
 endif()
 configure_file (
-	fcdproplus_fcdproplus.xml.in
-	fcdproplus_fcdproplus.xml
+	fcdproplus.block.yml.in
+	fcdproplus.block.yml
+	ESCAPE_QUOTES @ONLY
 )
+
+  
 install(FILES
-    ${CMAKE_BINARY_DIR}/grc/fcdproplus_fcdproplus.xml DESTINATION share/gnuradio/grc/blocks
+	${CMAKE_BINARY_DIR}/grc/fcdproplus.block.yml
+  fcdproplus_control.block.yml
+	DESTINATION "${GRC_BLOCKS_DIR}"
+
 )
