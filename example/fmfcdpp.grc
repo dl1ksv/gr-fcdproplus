@@ -1,0 +1,193 @@
+options:
+  parameters:
+    author: dl1ksv
+    category: Custom
+    generate_options: qt_gui
+    hier_block_src_path: '.:'
+    id: FMRadio
+    max_nouts: '0'
+    placement: (0,0)
+    run: 'True'
+    run_command: '{python} -u {filename}'
+    run_options: prompt
+    sizing_mode: fixed
+    title: FM radio to test FCDPROplus
+    window_size: 1280, 1024
+  states:
+    coordinate: [10, 10]
+    rotation: 0
+    state: enabled
+
+blocks:
+- name: Ifgain
+  id: variable_qtgui_range
+  parameters:
+    gui_hint: 0,3,1,1
+    label: IFGain
+    min_len: '45'
+    orient: Qt.Horizontal
+    rangeType: int
+    start: '0'
+    step: '1'
+    stop: '59'
+    value: '10'
+    widget: counter
+  states:
+    coordinate: [880, 12.0]
+    rotation: 0
+    state: enabled
+- name: Lna
+  id: variable_qtgui_chooser
+  parameters:
+    gui_hint: 0,1,1,1
+    label0: 'On'
+    label1: 'Off'
+    labels: '[]'
+    num_opts: '2'
+    option1: '0'
+    option2: '2'
+    option3: '3'
+    option4: '4'
+    options: '[0, 1, 2]'
+    orient: Qt.QVBoxLayout
+    type: int
+    value: '1'
+    widget: combo_box
+  states:
+    coordinate: [499, 15]
+    rotation: 0
+    state: enabled
+- name: Mixergain
+  id: variable_qtgui_chooser
+  parameters:
+    gui_hint: 0,2,1,1
+    label0: 'On'
+    label1: 'Off'
+    labels: '[]'
+    num_opts: '2'
+    option1: '0'
+    option2: '2'
+    option3: '3'
+    option4: '4'
+    options: '[0, 1, 2]'
+    orient: Qt.QVBoxLayout
+    type: int
+    value: '1'
+    widget: combo_box
+  states:
+    coordinate: [688, 12.0]
+    rotation: 0
+    state: enabled
+- name: RxFrequency
+  id: variable_qtgui_range
+  parameters:
+    gui_hint: 0,0,1,1
+    label: 'Set Frequency '
+    min_len: '200'
+    orient: Qt.Horizontal
+    rangeType: float
+    start: '80000'
+    step: '1'
+    stop: '146000'
+    value: '94300'
+    widget: counter
+  states:
+    coordinate: [345, 19]
+    rotation: 0
+    state: enabled
+- name: samp_rate
+  id: variable
+  parameters:
+    value: '192000'
+  states:
+    coordinate: [227, 23]
+    rotation: 0
+    state: enabled
+- name: analog_wfm_rcv_pll_0
+  id: analog_wfm_rcv_pll
+  parameters:
+    audio_decimation: '4'
+    quad_rate: samp_rate
+  states:
+    coordinate: [648, 432.0]
+    rotation: 0
+    state: true
+- name: audio_sink_0
+  id: audio_sink
+  parameters:
+    device_name: default
+    num_inputs: '2'
+    ok_to_block: 'True'
+    samp_rate: '48000'
+  states:
+    coordinate: [1110, 406]
+    rotation: 0
+    state: enabled
+- name: fcdproplus_fcdproplus_0
+  id: fcdproplus_fcdproplus
+  parameters:
+    freq: RxFrequency
+    if_gain: Ifgain
+    lnaswitch: Lna
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    mixergainswitch: Mixergain
+    ppm: ' 0'
+    unit: '1000'
+  states:
+    coordinate: [112, 212.0]
+    rotation: 0
+    state: enabled
+- name: low_pass_filter_0
+  id: low_pass_filter
+  parameters:
+    beta: '6.76'
+    cutoff_freq: '60000'
+    decim: '1'
+    gain: '5'
+    interp: '1'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    samp_rate: samp_rate
+    type: fir_filter_ccf
+    width: '500'
+    win: firdes.WIN_HAMMING
+  states:
+    coordinate: [400, 324.0]
+    rotation: 0
+    state: enabled
+- name: qtgui_sink_x_0
+  id: qtgui_sink_x
+  parameters:
+    bw: samp_rate
+    fc: RxFrequency*1000
+    fftsize: '1024'
+    gui_hint: 1,0,1,7
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    name: QT GUI Plot
+    plotconst: 'False'
+    plotfreq: 'True'
+    plottime: 'False'
+    plotwaterfall: 'True'
+    rate: '10'
+    showports: 'False'
+    showrf: 'True'
+    type: complex
+    wintype: firdes.WIN_BLACKMAN_hARRIS
+  states:
+    coordinate: [648, 140.0]
+    rotation: 0
+    state: enabled
+
+connections:
+- [analog_wfm_rcv_pll_0, '0', audio_sink_0, '0']
+- [analog_wfm_rcv_pll_0, '1', audio_sink_0, '1']
+- [fcdproplus_fcdproplus_0, '0', low_pass_filter_0, '0']
+- [fcdproplus_fcdproplus_0, '0', qtgui_sink_x_0, '0']
+- [low_pass_filter_0, '0', analog_wfm_rcv_pll_0, '0']
+- [qtgui_sink_x_0, freq, fcdproplus_fcdproplus_0, freq]
+- [qtgui_sink_x_0, freq, qtgui_sink_x_0, freq]
+
+metadata:
+  file_format: 1

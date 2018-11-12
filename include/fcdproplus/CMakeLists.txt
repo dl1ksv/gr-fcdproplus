@@ -24,5 +24,7 @@ install(FILES
     api.h
     fcdproplus.h
     fcdpp_control.h
+    fcd_control.h
+    fcd.h
     DESTINATION include/fcdproplus
 )

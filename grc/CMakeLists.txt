@@ -32,6 +32,8 @@ configure_file (
 install(FILES
 	${CMAKE_BINARY_DIR}/grc/fcdproplus.block.yml
   fcdproplus_control.block.yml
+  fcd_control.block.yml
+  fcd.block.yml
 	DESTINATION "${GRC_BLOCKS_DIR}"
 
 )

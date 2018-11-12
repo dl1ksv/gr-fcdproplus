@@ -1,4 +1,4 @@
-gr-fcdproplus is an linux and OSX addon for gnuradio to implement a funcube dongle pro+ source.
+gr-fcdproplus is an linux and OSX addon for gnuradio to implement a funcube dongle and a funcube dongle pro+ source.
 On linux it autodetects the correct soundcard from /proc/asound/cards.
 This idea was taken from the osmosdr drivers.
 
@@ -32,8 +32,11 @@ $make
 $su
 $make install
 
-After that you'll find in grc in Sources
-Funcube Dongle Pro+ source
+After that you'll find in grc in Custom - Fcd
+Funcube Dongle 
+Funcube Dongle control
+Funcube Dongle Pro+
+Funcube Dongle Pro+ control
 
 
 3.   Important
@@ -53,13 +56,16 @@ For instance:
 
 4.    Usage
 
-Two modules are available:
-
+Four modules are available:
+   - fcd control
+   - fcd
    - fcdpp_control
    - fcdproplus
 
-The first module only controls the dongle, while the second module controls the dongle by fcdpp_control and provides the IQ samples.
-Both modules accept messages to control the frequency. That was the reason to introduce the fcdpp_control module.
+The control modules only controls the dongles, while the other modules control the dongles and provide the IQ samples.
+All modules accept messages to control the frequency. That was the reason to introduce the control modules.
+
+The fcd modules where introduced, as gnuradio 3.8 does not contain gr-fcd at the moment.
 
 See the examples of a simple fm receiver in the examples directory or see a more complex example in in gr-display
 

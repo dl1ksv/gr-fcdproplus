@@ -1,0 +1,103 @@
+id: fcd
+label: Funcube Dongle
+category: '[Custom]/Fcd'
+flags: throttle
+
+parameters:
+-   id: devicename
+    label: Device Name
+    dtype: string
+    default: ''
+-   id: freq
+    label: Frequency (Hz)
+    dtype: real
+    default: '145500000'
+-   id: lna
+    label: LNA Gain (dB)
+    dtype: real
+    default: '20.0'
+-   id: mixer
+    label: Mixer Gain (dB)
+    dtype: real
+    default: '+12'
+-   id: ppm
+    label: Frequency corr. (ppm)
+    dtype: int
+    default: '-120'
+-   id: dci
+    label: DC I offset
+    dtype: real
+    default: '0.0'
+-   id: dcq
+    label: DC Q offset
+    dtype: real
+    default: '0.0'
+-   id: iq_phase
+    label: IQ phase balance
+    dtype: real
+    default: '0.0'
+-   id: iq_gain
+    label: IQ gain balance
+    dtype: real
+    default: '1.0'
+
+inputs:
+-   domain: message
+    id: freq
+    optional: true
+
+outputs:
+-   label: out
+    dtype: complex
+
+asserts:
+- ${ (freq >= 50e6) and (freq <= 2e9) }
+- ${ (dci >= -1.0) and (dci <= 1.0) }
+- ${ (dcq >= -1.0) and (dcq <= 1.0) }
+- ${ (iq_phase >= -1.0) and (iq_phase <= 1.0) }
+- ${ (iq_gain >= -1.0) and (iq_gain <= 1.0) }
+
+templates:
+    imports: import fcdproplus
+    make: |-
+        fcdproplus.fcd(${devicename})
+        % if lna != '20.0' :
+        self.${id}.set_lna_gain(${lna})
+        % endif
+        % if mixer != '+12' :
+        self.${id}.set_mixer_gain(${mixer})
+        %endif
+        % if ppm !=  '-120' :
+        self.${id}.set_freq_corr(${ppm})
+        % endif       
+        % if (dci != '0.0') or (dcq != '0.0'):
+        self.${id}.set_dc_corr(${dci},${dcq})
+        % endif
+        % if (iq_phase != '0.0') or (iq_gain != '1.0'):
+        self.${id}.set_iq_corr(${iq_gain},${iq_phase})
+        % endif
+        
+        self.${id}.set_freq(${freq})
+    callbacks:
+    - set_freq(${freq})
+    - set_lna_gain(${lna})
+    - set_mixer_gain(${mixer})
+    - set_freq_corr(${ppm})
+    - set_dc_corr(${dci},${dcq})
+    - set_iq_corr(${iq_gain},${iq_phase})
+
+documentation: |-
+    This block wraps the Funcube Dongle  USB HID control interface into one convenient GNU Radio source block.
+
+
+    The LNA gain is a set of discrete values between -5 to 30 dB with 2.5 dB step, but you can use any float value and it will be rounded to the nearest valid value.
+
+    The Mixer gain can be set either to +4 or +12 dB, but you can use any float value and it will be rounded to the nearest valid value.
+
+    The FCD block can autmatically apply frequency correction:
+      - For FCD v1.0 you can leave at -120 ppm
+      - For FCD v1.1 with serial number 810 or greater use -12 ppm
+
+    The DC offset and IQ balance parameters can have range -1.0 to 1.0.
+
+file_format: 1

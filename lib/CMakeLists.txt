@@ -28,6 +28,8 @@ link_directories(${COMMON_LIB_DIRS})
 list(APPEND fcdproplus_sources
     fcdproplus_impl.cc
     fcdpp_control_impl.cc
+    fcd_control_impl.cc
+    fcd_impl.cc
 )
 
 

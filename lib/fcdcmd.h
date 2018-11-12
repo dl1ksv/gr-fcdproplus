@@ -8,6 +8,11 @@
 #define FCD_HID_CMD_SET_FREQUENCY_HZ 101 // Send with 4 byte unsigned little endian frequency in Hz, returns with actual frequency set in Hz
 #define FCD_HID_CMD_GET_FREQUENCY_HZ 102 // Returns 4 byte unsigned little endian frequency in Hz.
 
+#define FCD_CMD_APP_SET_DC_CORR      106 /*!< Send with 2 byte unsigned I DC correction followed by 2 byte unsigned Q DC correction. 32768 is the default centre value. */
+
+#define FCD_CMD_APP_SET_IQ_CORR      108 /*!< Send with 2 byte signed phase correction followed by 2 byte unsigned gain correction. 0 is the default centre value for phase correction,
+                                          * 32768 is the default centre value for gain. */
+
 #define FCD_HID_CMD_SET_LNA_GAIN     110 // Send one byte, 1 on, 0 off
 #define FCD_HID_CMD_SET_RF_FILTER    113 // Send one byte enum, see TUNERRFFILTERENUM
 #define FCD_HID_CMD_SET_MIXER_GAIN   114 // Send one byte, 1 on, 0 off
@@ -51,4 +56,9 @@ typedef enum
   TIFE_8MHZ=7
 } TUNERIFFILTERENUM;
 
+typedef enum
+{
+  TMGE_P4_0DB=0,
+  TMGE_P12_0DB=1
+} TUNER_MIXER_GAIN_ENUM;
 //#endif

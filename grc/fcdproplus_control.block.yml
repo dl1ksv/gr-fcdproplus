@@ -1,7 +1,6 @@
 id: fcdproplus_control
 label: Funcube dongle Pro+ Control
 category: '[Custom]/Fcd'
-flags: throttle
 
 parameters: 
 -   id: lnaswitch

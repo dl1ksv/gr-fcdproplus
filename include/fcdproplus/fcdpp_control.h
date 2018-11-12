@@ -31,7 +31,6 @@ namespace gr {
     class FCDPROPLUS_API fcdpp_control : virtual public block
     {
     public:
-      // gr::blocks::message_debug::sptr
       typedef boost::shared_ptr<fcdpp_control> sptr;
 
       static sptr make();
