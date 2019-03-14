@@ -23,8 +23,6 @@
 include(GrPlatform) #define LIB_SUFFIX
 include(GrMiscUtils)
 
-link_directories(${COMMON_LIB_DIRS})
-
 list(APPEND fcdproplus_sources
     fcdproplus_impl.cc
     fcdpp_control_impl.cc
@@ -33,44 +31,67 @@ list(APPEND fcdproplus_sources
 )
 
 
-if(APPLE)
-  FIND_LIBRARY(IOKIT_LIBRARY IOKit)
-  list(APPEND fcdproplus_libs ${IOKIT_LIBRARY})
-  FIND_LIBRARY(COREFOUNDATION_LIBRARY CoreFoundation)
-  list(APPEND fcdproplus_libs ${COREFOUNDATION_LIBRARY})
-else()
- list(APPEND fcdproplus_libs ${LIBUSB_LIBRARIES} )
-endif()
-if(HIDAPI_LIBRARY)
-  add_library(gnuradio-fcdproplus SHARED ${fcdproplus_sources})
-  list(APPEND fcdproplus_libs  ${HIDAPI_LIBRARY} )
-  set_target_properties(gnuradio-fcdproplus PROPERTIES COMPILE_DEFINITIONS 
-	  "SYSTEM_HIDAPI")
-  include_directories(
-	      ${COMMON_INCLUDE_DIRS} 
-	      )
-else()
+#if(APPLE)
+#  FIND_LIBRARY(IOKIT_LIBRARY IOKit)
+#  list(APPEND fcdproplus_libs ${IOKIT_LIBRARY})
+#  FIND_LIBRARY(COREFOUNDATION_LIBRARY CoreFoundation)
+#  list(APPEND fcdproplus_libs ${COREFOUNDATION_LIBRARY})
+#else()
+# list(APPEND fcdproplus_libs ${LIBUSB_LIBRARIES} )
+#endif()
+#MESSAGE(STATUS "+++++GNURADIO Common INCLUDES: ${COMMON_INCLUDE_DIRS}")
+#if(HIDAPI_LIBRARY)
+#  add_library(gnuradio-fcdproplus SHARED ${fcdproplus_sources})
+#  list(APPEND fcdproplus_libs  ${HIDAPI_LIBRARY} )
+#  set_target_properties(gnuradio-fcdproplus PROPERTIES COMPILE_DEFINITIONS 
+#	  "SYSTEM_HIDAPI")
+#  include_directories(
+#	      ${COMMON_INCLUDE_DIRS} 
+#	      )
+#else()
 #  MESSAGE(STATUS "Bundled hidapi is used")
-  include_directories(
-    ${CMAKE_CURRENT_SOURCE_DIR}/hid
-    ${COMMON_INCLUDE_DIRS} 
-  )
-  if(APPLE)
-    list(APPEND fcdproplus_sources
-    ${CMAKE_CURRENT_SOURCE_DIR}/hid/hidmac.c)
-  else()
-   list(APPEND fcdproplus_sources ${CMAKE_CURRENT_SOURCE_DIR}/hid/hid.c)
-  endif()
-  add_library(gnuradio-fcdproplus SHARED ${fcdproplus_sources})
+#  include_directories(
+#    ${CMAKE_CURRENT_SOURCE_DIR}/hid
+#    ${COMMON_INCLUDE_DIRS} 
+#  )
+#  if(APPLE)
+#    list(APPEND fcdproplus_sources
+#    ${CMAKE_CURRENT_SOURCE_DIR}/hid/hidmac.c)
+#  else()
+#   list(APPEND fcdproplus_sources ${CMAKE_CURRENT_SOURCE_DIR}/hid/hid.c)
+#  endif()
+#  add_library(gnuradio-fcdproplus SHARED ${fcdproplus_sources})
+#endif()
+
+add_library(gnuradio-fcdproplus SHARED ${fcdproplus_sources})
+list(APPEND fcdproplus_libs ${LIBUSB_LIBRARIES} )
+
+if(HIDAPI_LIBRARY)
+    MESSAGE(STATUS "System Hidapi will be used")
+    list(APPEND fcdproplus_libs  ${HIDAPI_LIBRARY} )
+    find_path(HIDAPI_INCLUDES NAMES "hidapi.h"
+        HINTS /usr/include/hidapi
+        PATHS
+        /usr/include
+        /usr/local/include
+    )
+MESSAGE(STATUS "Hidapi libs: ${HIDAPI_LIBRARY} ")
+MESSAGE(STATUS "Hidapi header file found at: ${HIDAPI_INCLUDES}")
+
 endif()
+target_link_libraries(gnuradio-fcdproplus gnuradio::gnuradio-audio gnuradio::gnuradio-blocks ${fcdproplus_libs})
+target_include_directories(gnuradio-fcdproplus
+PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../include>
+       PUBLIC $<INSTALL_INTERFACE:include>
+       ${HIDAPI_INCLUDES} )
+#GET_DIRECTORY_PROPERTY( INC_DIR INCLUDE_DIRECTORIES )
+#MESSAGE(STATUS "+++++INCLUDES: ${INC_DIR}")
+#target_link_libraries(gnuradio-fcdproplus ${fcdproplus_libs} ${Boost_LIBRARIES}
+#  ${GNURADIO_RUNTIME_LIBRARIES} ${GNURADIO_BLOCKS_LIBRARIES}
+#  ${GNURADIO_AUDIO_LIBRARIES}
+#)
 
 
-target_link_libraries(gnuradio-fcdproplus ${fcdproplus_libs} ${Boost_LIBRARIES}
-  ${GNURADIO_RUNTIME_LIBRARIES} ${GNURADIO_BLOCKS_LIBRARIES}
-  ${GNURADIO_AUDIO_LIBRARIES}
-)
-
-target_link_libraries(gnuradio-fcdproplus ${GNURADIO_PMT_LIBRARIES})
 if(APPLE)
   SET_TARGET_PROPERTIES(gnuradio-fcdproplus PROPERTIES
       INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/${GR_LIBRARY_DIR}")
