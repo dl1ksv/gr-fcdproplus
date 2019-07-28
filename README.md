@@ -9,7 +9,7 @@ To control the device the hidapi usb version is used.
 
 1.   Dependencies:
 
-  - gnuradio
+  - gnuradio (>= 3.8 )
   - alsa usb drivers activated
   - hidapi-libusb 
 
