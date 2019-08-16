@@ -76,4 +76,4 @@ Some code is taken from qthid-4.1 by Alexandru Csete, OZ9AEC.
 The hid part is taken from
  http://github.com/signal11/hidapi
 
-Thanks to Micael Dickens, who gave valuable hints for implementing message in hier2_blocks.
+Thanks to Michael Dickens, who gave valuable hints for implementing message in hier2_blocks.
