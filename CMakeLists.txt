@@ -44,12 +44,16 @@ if(NOT CMAKE_BUILD_TYPE)
 endif(NOT CMAKE_BUILD_TYPE)
 set(CMAKE_BUILD_TYPE ${CMAKE_BUILD_TYPE} CACHE STRING "")
 
+########################################################################
+#
+# setup version info
+#
+########################################################################
 
-# Set the version information here
-set(VERSION_INFO_MAJOR_VERSION 3)
-set(VERSION_INFO_API_COMPAT    8)
-set(VERSION_INFO_MINOR_VERSION 0)
-set(VERSION_INFO_MAINT_VERSION git)
+set(VERSION_MAJOR 3)
+set(VERSION_API 8)
+SET(VERSION_ABI 0)
+SET(VERSION_PATCH 0)
 
 cmake_policy(SET CMP0011 NEW)
 ########################################################################
@@ -68,14 +72,22 @@ endif()
 ########################################################################
 # Find gnuradio build dependencies
 ########################################################################
-#set(GR_REQUIRED_COMPONENTS RUNTIME BLOCKS AUDIO)
+
 find_package(Gnuradio "3.8" REQUIRED audio blocks PATHS ${CMAKE_INSTALL_PREFIX} )
 list(INSERT CMAKE_MODULE_PATH 0 "${CMAKE_SOURCE_DIR}/cmake/Modules")
 FIND_LIBRARY(HIDAPI_LIBRARY hidapi-libusb)
 
 include(GrVersion)
 
-
+########################################################################
+# Find fcd(proplus) dependencies
+########################################################################
+if( ${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+    find_package(USB)
+    if(NOT LIBUSB_FOUND)
+        message(FATAL_ERROR "libusb required to compile fcdproplus")
+    endif()
+endif()
 ########################################################################
 # Install directories
 ########################################################################
@@ -118,29 +130,16 @@ if(APPLE)
             BOOL "Do Build Using Library Install RPath" FORCE)
     endif(NOT CMAKE_BUILD_WITH_INSTALL_RPATH)
 endif(APPLE)
-########################################################################
-# Find gnuradio build dependencies
-########################################################################
-find_package(Doxygen)
 
 ########################################################################
 # Setup doxygen option
 ########################################################################
+find_package(Doxygen)
 if(DOXYGEN_FOUND)
         option(ENABLE_DOXYGEN "Build docs using Doxygen" ON)
 else(DOXYGEN_FOUND)
         option(ENABLE_DOXYGEN "Build docs using Doxygen" OFF)
 endif(DOXYGEN_FOUND)
-
-########################################################################
-# Find fcd(proplus) dependencies
-########################################################################
-if( ${CMAKE_SYSTEM_NAME} MATCHES "Linux")
-    find_package(USB)
-    if(NOT LIBUSB_FOUND)
-        message(FATAL_ERROR "libusb required to compile fcdproplus")
-    endif()
-endif()
 
 ########################################################################
 # Create uninstall target

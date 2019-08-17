@@ -42,8 +42,6 @@ if(HIDAPI_LIBRARY)
         /usr/include
         /usr/local/include
     )
-MESSAGE(STATUS "Hidapi libs: ${HIDAPI_LIBRARY} ")
-MESSAGE(STATUS "Hidapi header file found at: ${HIDAPI_INCLUDES}")
 else ()
     list(APPEND fcdproplus_sources ${CMAKE_CURRENT_SOURCE_DIR}/hid/hid.c)
     set(HIDAPI_INCLUDES "${CMAKE_CURRENT_SOURCE_DIR}/hid")
