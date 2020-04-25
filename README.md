@@ -25,11 +25,17 @@ get the latest code from https://github.com/dl1ksv/gr-fcdproplus
 
 The build process is cmake based. So change to code directory.
 There
+
 $mkdir build
+
 $cd build
-$cmake -DCMAKE_INSTALL_PREFIX=<where gnuradio is installed> ../
+
+$cmake -DCMAKE_INSTALL_PREFIX=\<where gnuradio is installed\> ../
+
 $make
+
 $su
+
 $make install
 
 After that you'll find in grc in Custom - Fcd
