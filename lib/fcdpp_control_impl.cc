@@ -74,7 +74,7 @@ namespace gr {
        * Initialize message handling
        */
       message_port_register_in(pmt::mp("freq"));
-      set_msg_handler(pmt::mp("freq"), boost::bind(&fcdpp_control_impl::set_frequency_msg, this, _1));
+      set_msg_handler(pmt::mp("freq"), boost::bind(&fcdpp_control_impl::set_frequency_msg, this, boost::placeholders::_1));
 
     }
     fcdpp_control_impl::~fcdpp_control_impl()
