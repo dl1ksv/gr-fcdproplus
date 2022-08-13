@@ -1,3 +1,11 @@
+
+# Warning: 
+
+**gr-fcd is no longer part of gnuradio. So I decided to stop maintaining gr-fcdproplus and set up a new oot gr-funcube.
+gr funcube contains the drivers for both the fcd and the fcdproplus dongle**.
+
+**So you should use [gr-funcube](https://github.com/dl1ksv/gr-funcube) instead of gr-fcdproplus in the future**.
+
 gr-fcdproplus is an linux and OSX addon for gnuradio to implement a funcube dongle and a funcube dongle pro+ source.
 On linux it autodetects the correct soundcard from /proc/asound/cards.
 This idea was taken from the osmosdr drivers.
@@ -5,11 +13,9 @@ This idea was taken from the osmosdr drivers.
 To control the device the hidapi usb version is used.
 
 
-
-
 1.   Dependencies:
 
-  - gnuradio (>= 3.8 )
+  - gnuradio ( 3.8 )
   - alsa usb drivers activated
   - hidapi-libusb 
 
